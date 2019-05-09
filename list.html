@@ -5,12 +5,12 @@
     <title>List</title>
 </head>
 <body>
-    <input type="text" id="tbItem" placeholder="add" style="border:1px solid #cccccc;border-radius:25px; width:94%;
+    <input type="text" id="tbItem" style="border:1px solid #cccccc;border-radius:25px; width:94%;
             padding: 5px 10px 5px 10px;outline: none;font-size: 16px;" />
     <br /><br />
     <div id="dvItems"></div>
     <script>
-        var key = getParam("u");
+        var key = getParam("k");
         var mode = getParam("m");
         var sort = getParam("s");
         var cacheName = "list" + ((key == "") ? "" : "_" + key);
@@ -35,7 +35,6 @@
                 var dvItem = document.createElement('div');
                 dvItem.innerHTML = items[i];
                 dvItem.setAttribute("index", i);
-                dvItem.setAttribute("url", items[i]);
                 dvItem.setAttribute("style", "word-wrap:break-word;");
                 dvItem.appendChild(document.createElement('br'));
                 dvItem.appendChild(document.createElement('br'));
