@@ -23,6 +23,8 @@
               links.sort(function (a, b) { return a.title > b.title });
               setCache(links);
               showLinks();
+              document.getElementById("tbLink").value = "";
+              document.getElementById("tbLink").value.blur();
           }
       });
       function showLinks() {
