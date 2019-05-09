@@ -35,6 +35,7 @@
                 var dvItem = document.createElement('div');
                 dvItem.innerHTML = items[i];
                 dvItem.setAttribute("index", i);
+                dvItem.setAttribute("style", "word-wrap:break-word;");
                 dvItem.appendChild(document.createElement('br'));
                 dvItem.appendChild(document.createElement('br'));
                 if(mode == "l") {
