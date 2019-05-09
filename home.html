@@ -20,6 +20,7 @@
               var links = getCache();
               var linkData = value.split("|");
               links.push({"title": linkData[0], "url": linkData[1]});              
+              links.sort(function(a,b){return a.title.localeCompare(b.title)});
               setCache(links);
               showLinks();
               document.getElementById("tbLink").value = "";
@@ -28,7 +29,6 @@
       });
       function showLinks() {
           var links = getCache();
-          links.sort(function (a, b) { return a.title > b.title });
           var dvLinks = document.getElementById("dvLinks");
           dvLinks.innerHTML = "";
           for (var i = 0; i < links.length; i++) {
