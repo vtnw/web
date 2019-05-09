@@ -56,8 +56,7 @@
                 }
                 else if(mode == "v") {                    
                 }
-                dvItem.appendChild(document.createElement('br'));
-                dvItem.appendChild(document.createElement('br'));
+                dvItem.innerHTML = "<br/>"+ dvItem.innerHTML + "<br/>";
                 dvItems.insertBefore(dvItem, dvItems.firstChild);
             }
         }
