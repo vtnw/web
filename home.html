@@ -21,7 +21,7 @@
               links.push({"title": linkData[0], "url": linkData[1]});
               links.sort(function (a, b) { return a.title > b.title });
               setCache(links);
-              location.reload();
+              showLinks();
           }
       });
       function showLinks() {
