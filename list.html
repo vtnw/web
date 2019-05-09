@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+</head>
+<body>
+    <input type="text" id="tbItem" placeholder="add" style="border:1px solid #cccccc;border-radius:25px; width:94%;
+            padding: 5px 10px 5px 10px;outline: none;font-size: 16px;" />
+    <br /><br />
+    <div id="dvItems"></div>
+    <script>
+        var key = getParam("u");
+        var mode = getParam("m");
+        var sort = getParam("s");
+        var cacheName = "list" + (key == "") ? "" : "_" + key;
+        document.getElementById("tbItem").addEventListener("keyup", function (event) {
+            event.preventDefault();
+            var value = document.getElementById("tbItem").value.trim();
+            if (event.keyCode == 13 && value != "") {
+                var items = getCache();
+                items.push(value);
+                switch(sort) {
+                    case "a": {
+                        items.sort(function(a,b){return b.localeCompare(a)});break;
+                    }
+                    case "z": {
+                        items.sort(function(a,b){return a.localeCompare(b)});break;
+                    }
+                    case "n":
+                    default: {
+                        break;
+                    }
+                }
+                document.getElementById("tbItem").value = "";
+                document.getElementById("tbItem").blur();
+                setCache(items);
+                buildList();
+            }
+        });
+        function buildList() {
+            var items = getCache();
+            var dvItems = document.getElementById("dvItems");
+            dvItems.innerHTML = "";
+            for (var i = 0; i < items.length; i++) {
+                var dvItem = document.createElement('div');
+                dvItem.innerHTML = items[i];
+                dvItem.setAttribute("index", i);
+                dvItem.appendChild(document.createElement('br'));
+                dvItem.appendChild(document.createElement('br'));
+                if(mode == "l") {
+                    dvItem.setAttribute("style", "cursor:pointer;text-decoration:underline");
+                    dvItem.addEventListener("click", function () {
+                        location.href = this.innerText;
+                    });
+                }
+                else if(mode == "e") {
+                    dvItem.addEventListener("click", function () {
+                        var index = parseInt(this.getAttribute("index"));
+                        var items = getCache();
+                        items.splice(index, 1);
+                        setCache(items);
+                        buildItems();
+                        document.getElementById("tbItem").value = this.innerText;
+                    });
+                }
+                else if(mode == "v") {                    
+                }
+                dvItems.insertBefore(dvItem, dvItems.firstChild);
+            }
+        }
+        function getCache() {
+            var items = JSON.parse(localStorage.getItem(cacheName));
+            if (items == null) {
+                items = [];
+            }            
+            return items;
+        }
+        function setCache(items) {
+            localStorage.setItem(cacheName, JSON.stringify(items));
+        }
+        function getParam(name){
+          return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(name).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+        }
+        buildList();
+    </script>
+</body>
+</html>
