@@ -19,8 +19,7 @@
           if (event.keyCode == 13 && value != "") {
               var links = getCache();
               var linkData = value.split("|");
-              links.push({"title": linkData[0], "url": linkData[1]});              
-              links.sort(function(a,b){return a.title.localeCompare(b.title)});
+              links.push({"title": linkData[0], "url": linkData[1]});
               setCache(links);
               showLinks();
               document.getElementById("tbLink").value = "";
