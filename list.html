@@ -19,19 +19,7 @@
             var value = document.getElementById("tbItem").value.trim();
             if (event.keyCode == 13 && value != "") {
                 var items = getCache();
-                items.push(value);
-                switch(sort) {
-                    case "a": {
-                        items.sort(function(a,b){return b.localeCompare(a)});break;
-                    }
-                    case "z": {
-                        items.sort(function(a,b){return a.localeCompare(b)});break;
-                    }
-                    case "n":
-                    default: {
-                        break;
-                    }
-                }
+                items.push(value);                
                 setCache(items);
                 document.getElementById("tbItem").value = "";
                 document.getElementById("tbItem").blur();                
@@ -73,7 +61,19 @@
             var items = JSON.parse(localStorage.getItem(cacheName));
             if (items == null) {
                 items = [];
-            }            
+            }
+            switch(sort) {
+                case "a": {
+                    items.sort(function(a,b){return b.localeCompare(a)});break;
+                }
+                case "z": {
+                    items.sort(function(a,b){return a.localeCompare(b)});break;
+                }
+                case "n":
+                default: {
+                    break;
+                }
+            }
             return items;
         }
         function setCache(items) {
