@@ -35,13 +35,17 @@
                 var dvItem = document.createElement('div');
                 dvItem.innerHTML = items[i];
                 dvItem.setAttribute("index", i);
+                dvItem.setAttribute("url", items[i]);
                 dvItem.setAttribute("style", "word-wrap:break-word;");
                 dvItem.appendChild(document.createElement('br'));
                 dvItem.appendChild(document.createElement('br'));
                 if(mode == "l") {
+                    var linkData = items[i].split("|");
+                    dvItem.innerHTML = linkData[0];
+                    dvItem.setAttribute("url", linkData[1]);
                     dvItem.setAttribute("style", "word-wrap:break-word;cursor:pointer;text-decoration:underline");
                     dvItem.addEventListener("click", function () {
-                        window.open(this.innerText);
+                        window.open(this.getAttribute("url"));
                     });
                 }
                 else if(mode == "e") {
