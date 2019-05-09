@@ -14,6 +14,7 @@
         var mode = getParam("m");
         var sort = getParam("s");
         var cacheName = "list" + ((key == "") ? "" : "_" + key);
+        document.title = document.title + ((key == "") ? "" : "-" + key);
         document.getElementById("tbItem").addEventListener("keyup", function (event) {
             event.preventDefault();
             var value = document.getElementById("tbItem").value.trim();
