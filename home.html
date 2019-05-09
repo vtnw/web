@@ -34,6 +34,7 @@
           for (var i = 0; i < links.length; i++) {
               var a = document.createElement('a');                
               a.setAttribute("href", links[i].url);
+              a.setAttribute("target", "_blank");
               a.innerHTML = (mode == "v") ? links[i].title + "<br/>" + links[i].url : links[i].title;
               dvLinks.appendChild(a);
               dvLinks.appendChild(document.createElement('br'));
