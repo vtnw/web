@@ -56,8 +56,9 @@
                 }
                 else if(mode == "v") {                    
                 }
-                dvItem.innerHTML = "<br/>"+ dvItem.innerHTML + "<br/>";
+                dvItems.insertBefore(document.createElement("div"));
                 dvItems.insertBefore(dvItem, dvItems.firstChild);
+                dvItems.insertBefore(document.createElement("div"));
             }
         }
         function getCache() {
