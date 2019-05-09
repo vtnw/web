@@ -32,9 +32,9 @@
                         break;
                     }
                 }
-                document.getElementById("tbItem").value = "";
-                document.getElementById("tbItem").blur();
                 setCache(items);
+                document.getElementById("tbItem").value = "";
+                document.getElementById("tbItem").blur();                
                 buildList();
             }
         });
@@ -60,7 +60,7 @@
                         var items = getCache();
                         items.splice(index, 1);
                         setCache(items);
-                        buildItems();
+                        buildList();
                         document.getElementById("tbItem").value = this.innerText;
                     });
                 }
