@@ -40,7 +40,7 @@
                 if(mode == "l") {
                     dvItem.setAttribute("style", "cursor:pointer;text-decoration:underline");
                     dvItem.addEventListener("click", function () {
-                        location.href = this.innerText;
+                        window.open(this.innerText);
                     });
                 }
                 else if(mode == "e") {
