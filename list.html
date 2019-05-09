@@ -39,7 +39,7 @@
                 dvItem.appendChild(document.createElement('br'));
                 dvItem.appendChild(document.createElement('br'));
                 if(mode == "l") {
-                    dvItem.setAttribute("style", "cursor:pointer;text-decoration:underline");
+                    dvItem.setAttribute("style", "word-wrap:break-word;cursor:pointer;text-decoration:underline");
                     dvItem.addEventListener("click", function () {
                         window.open(this.innerText);
                     });
