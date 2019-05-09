@@ -39,7 +39,7 @@
                     var linkData = items[i].split("|");
                     dvItem.innerHTML = linkData[0];
                     dvItem.setAttribute("url", linkData[1]);
-                    dvItem.setAttribute("style", "word-wrap:break-word;cursor:pointer;text-decoration:underline");
+                    dvItem.setAttribute("style", "word-wrap:break-word;cursor:pointer;text-decoration:underline;outline:none;");
                     dvItem.addEventListener("click", function () {
                         window.open(this.getAttribute("url"));
                     });
