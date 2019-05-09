@@ -9,7 +9,9 @@
     <div id="dvLinks"></div>
     <input type="text" id="tbLink" placeholder="add" style="border:none;outline:none;width:90%" />
     <script>
-      var cacheName = "home" + getParam("u");
+      var key = getParam("u");
+      var mode = getParam("m");
+      var cacheName = "home" + (key == "") ? "" : "_" + key;
       document.getElementById("tbLink").addEventListener("keyup", function (event) {
           event.preventDefault();
           var value = document.getElementById("tbLink").value.trim();
@@ -29,7 +31,7 @@
           for (var i = 0; i < links.length; i++) {
               var a = document.createElement('a');                
               a.setAttribute("href", links[i].url);
-              a.innerHTML = (getParam("m") == "v") ? links[i].title + "<br/>" + links[i].url : links[i].title;
+              a.innerHTML = (mode == "v") ? links[i].title + "<br/>" + links[i].url : links[i].title;
               dvLinks.appendChild(a);
               dvLinks.appendChild(document.createElement('br'));
               dvLinks.appendChild(document.createElement('br'));              
