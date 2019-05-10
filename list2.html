@@ -3,11 +3,18 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List</title>
+    <style>
+        .tb::-webkit-scrollbar {
+           display: none;
+         }
+        .tb{
+           border:1px solid #cccccc;border-radius:25px;width:94%;padding:10px;outline:none;font-size:16px;height:20px;max-height:200px;resize:none;font-family:inherit;
+        }
+    </style>
 </head>
 <body>
     <br />
-    <textarea id="tbItem" style="border:1px solid #cccccc;border-radius:25px;width:94%;padding:10px;
-        outline:none;font-size:16px;height:20px;max-height:200px;resize:none;font-family:inherit;overflow:scroll;"></textarea>
+    <textarea id="tbItem" class="tb"></textarea>
     <br /><br />
     <div id="dvItems"></div>
     <script>
