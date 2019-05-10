@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html manifest="web.appcache">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List</title>
+</head>
+<body>
+    <textarea id="tbItem" style="border:1px solid #cccccc;border-radius:25px;width:94%;padding:5px 10px 5px 10px;
+        outline:none;font-size:16px;height:20px;max-height:100px;"></textarea>
+    <br /><br />
+    <div id="dvItems"></div>
+    <script>
+        var key = getParam("k");
+        var mode = getParam("m");
+        var sort = getParam("s");
+        var cacheName = "list" + ((key == "") ? "" : "_" + key);
+        document.title = (key == "") ? "List" : key.charAt(0).toUpperCase() + key.slice(1);
+        document.getElementById("tbItem").addEventListener("keyup", function (event) {
+            event.preventDefault();
+            var value = document.getElementById("tbItem").value.trim();
+            if (event.keyCode == 13 && value != "") {
+                var items = getCache();
+                items.push(value);
+                setCache(items);
+                document.getElementById("tbItem").value = "";
+                document.getElementById("tbItem").blur();
+                buildList();
+            }
+            setTimeout(function () {
+                document.getElementById("tbItem").style.height = "auto";
+                document.getElementById("tbItem").style.height = document.getElementById("tbItem").scrollHeight + 'px';
+            },0);
+        });
+        function buildList() {
+            var items = getCache();
+            var dvItems = document.getElementById("dvItems");
+            dvItems.innerHTML = "";
+            for (var i = 0; i < items.length; i++) {
+                var dvItem = document.createElement('div');
+                dvItem.innerHTML = items[i];
+                dvItem.setAttribute("index", i);
+                dvItem.setAttribute("style", "word-wrap:break-word;");
+                if(mode == "l") {
+                    var linkData = items[i].split("|");
+                    dvItem.innerHTML = linkData[0];
+                    dvItem.setAttribute("url", linkData[1]);
+                    dvItem.setAttribute("style", "word-wrap:break-word;text-decoration:underline;");
+                    dvItem.addEventListener("click", function () {
+                        window.open(this.getAttribute("url"));
+                    });
+                }
+                else if(mode == "e") {
+                    dvItem.addEventListener("click", function () {
+                        var index = parseInt(this.getAttribute("index"));
+                        var items = getCache();
+                        items.splice(index, 1);
+                        setCache(items);
+                        buildList();
+                        document.getElementById("tbItem").value = this.innerText;
+                    });
+                }
+                else if(mode == "v") {
+                }
+                dvItems.insertBefore(document.createElement("br"), dvItems.firstChild);
+                dvItems.insertBefore(dvItem, dvItems.firstChild);
+            }
+        }
+        function getCache() {
+            var items = JSON.parse(localStorage.getItem(cacheName));
+            if (items == null) {
+                items = [];
+            }
+            switch(sort) {
+                case "a": {
+                    items.sort(function(a,b){return b.localeCompare(a)});break;
+                }
+                case "z": {
+                    items.sort(function(a,b){return a.localeCompare(b)});break;
+                }
+                case "n":
+                default: {
+                    break;
+                }
+            }
+            return items;
+        }
+        function setCache(items) {
+            localStorage.setItem(cacheName, JSON.stringify(items));
+        }
+        function getParam(name){
+          return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(name).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+        }
+        buildList();
+    </script>
+</body>
+</html>
