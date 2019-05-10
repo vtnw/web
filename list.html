@@ -46,7 +46,7 @@
             dvItems.innerHTML = "";
             for (var i = 0; i < items.length; i++) {
                 var dvItem = document.createElement('div');
-                dvItem.innerHTML = items[i].replace(/(?:\r\n)/g, "<br/>");
+                dvItem.innerHTML = items[i].replace(/(?:\r\n|\r|\n)/g, "<br/>");
                 dvItem.setAttribute("index", i);                
                 if(mode == "l") {
                     var linkData = items[i].split("|");
