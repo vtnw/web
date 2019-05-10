@@ -8,7 +8,7 @@
            display: none;
          }
         .tb{
-           border:1px solid #cccccc;border-radius:25px;width:94%;padding:10px;outline:none;font-size:16px;height:15px;max-height:200px;resize:none;font-family:inherit;
+           border:1px solid #000000;border-radius:25px;width:94%;padding:10px;outline:none;font-size:16px;height:15px;max-height:200px;resize:none;font-family:inherit;
         }
     </style>
 </head>
@@ -72,7 +72,7 @@
                         items.splice(index, 1);
                         setCache(items);
                         buildList();
-                        document.getElementById("tbItem").value = this.innerText.replace(/(?:\<br\/\>)/g, '\r\n');
+                        document.getElementById("tbItem").value = this.innerText.replace(/(?:\<br\/\>)/g, "&#13;");
                         adjustText();
                     });
                 }
