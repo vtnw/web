@@ -1,21 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html manifest="web.appcache">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List</title>
-    <style>
-        .tb::-webkit-scrollbar {
-           display: none;
-         }
-        .tb{
-           border:1px solid #cccccc;border-radius:25px;width:94%;padding:10px;outline:none;font-size:16px;height:15px;max-height:200px;resize:none;font-family:inherit;
-        }
-    </style>
+    <style>.tb::-webkit-scrollbar {display: none;}</style>
 </head>
 <body>
-    <textarea id="tbItem" class="tb"></textarea>
+    <textarea id="tbItem" class="tb" style="border:1px solid #cccccc;border-radius:25px;width:94%;padding:10px;outline:none;font-size:16px;height:15px;max-height:200px;resize:none;font-family:inherit;"></textarea>
     <br /><br />
-    <div id="dvItems"></div>
+    <div id="dvItems" style="word-wrap:break-word;"></div>
     <script>
         var key = getParam("k");
         var mode = getParam("m");
@@ -53,14 +46,13 @@
             dvItems.innerHTML = "";
             for (var i = 0; i < items.length; i++) {
                 var dvItem = document.createElement('div');
-                dvItem.innerHTML = items[i].replace(/(?:\r\n|\r|\n)/g, "<br/>");
-                dvItem.setAttribute("index", i);
-                dvItem.setAttribute("style", "word-wrap:break-word;");
+                dvItem.innerHTML = items[i].replace(/(?:\r\n)/g, "<br/>");
+                dvItem.setAttribute("index", i);                
                 if(mode == "l") {
                     var linkData = items[i].split("|");
                     dvItem.innerHTML = linkData[0];
                     dvItem.setAttribute("url", linkData[1]);
-                    dvItem.setAttribute("style", "word-wrap:break-word;text-decoration:underline;");
+                    dvItem.setAttribute("style", "text-decoration:underline;");
                     dvItem.addEventListener("click", function () {
                         window.open(this.getAttribute("url"));
                     });
@@ -75,8 +67,6 @@
                         document.getElementById("tbItem").value = this.innerHTML.replace(/(?:\<br\>)/g, "\r\n");
                         adjustText();
                     });
-                }
-                else if(mode == "v") {
                 }
                 dvItems.insertBefore(document.createElement("br"), dvItems.firstChild);
                 dvItems.insertBefore(dvItem, dvItems.firstChild);
@@ -95,11 +85,7 @@
                     items.sort(function(a,b){return a.localeCompare(b)});break;
                 }
                 case "o": {
-                    if(mode == "v" || mode == "l") {items.reverse();}
-                }
-                case "n":
-                default: {
-                    break;
+                    if(mode != "e") {items.reverse();}break;
                 }
             }
             return items;
@@ -108,7 +94,7 @@
             localStorage.setItem(cacheName, JSON.stringify(items));
         }
         function getParam(name){
-          return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(name).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+            return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(name).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
         }
         buildList();
     </script>
