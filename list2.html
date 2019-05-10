@@ -8,7 +8,7 @@
            display: none;
          }
         .tb{
-           border:1px solid #cccccc;border-radius:25px;width:94%;padding:10px;outline:none;font-size:16px;height:20px;max-height:200px;resize:none;font-family:inherit;
+           border:1px solid #cccccc;border-radius:15px;width:94%;padding:10px;outline:none;font-size:16px;height:15px;max-height:200px;resize:none;font-family:inherit;
         }
     </style>
 </head>
@@ -34,16 +34,14 @@
                 tbItem.blur();
                 buildList();
             } else {
-                //setTimeout(function () {
-                    tbItem.style.height = "auto";
-                    tbItem.style.height = tbItem.scrollHeight + 'px';
-                //},0);
+                tbItem.style.height = "auto";
+                tbItem.style.height = tbItem.scrollHeight + 'px';
             }
         });
         document.getElementById("tbItem").addEventListener("blur", function (event) {
             var tbItem = document.getElementById("tbItem");
             if(tbItem.value == ""){
-                tbItem.style.height = "20px";
+                tbItem.style.height = "15px";
             }
         });
         function buildList() {
