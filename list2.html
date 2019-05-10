@@ -34,10 +34,10 @@
                 tbItem.blur();
                 buildList();
             } else {
-                setTimeout(function () {
+                //setTimeout(function () {
                     tbItem.style.height = "auto";
                     tbItem.style.height = tbItem.scrollHeight + 'px';
-                },0);
+                //},0);
             }
         });
         document.getElementById("tbItem").addEventListener("blur", function (event) {
