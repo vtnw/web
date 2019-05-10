@@ -72,7 +72,8 @@
                         items.splice(index, 1);
                         setCache(items);
                         buildList();
-                        document.getElementById("tbItem").value = this.innerText.replace(/(?:\<br\/\>)/g, '\n');
+                        document.getElementById("tbItem").value = this.innerText.replace(/(?:\<br\/\>)/g, "\n");
+                        adjustText();
                     });
                 }
                 else if(mode == "v") {
