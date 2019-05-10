@@ -13,7 +13,6 @@
     </style>
 </head>
 <body>
-    <br />
     <textarea id="tbItem" class="tb"></textarea>
     <br /><br />
     <div id="dvItems"></div>
@@ -34,11 +33,12 @@
                 tbItem.value = "";
                 tbItem.blur();
                 buildList();
+            } else {
+                setTimeout(function () {
+                    tbItem.style.height = "auto";
+                    tbItem.style.height = tbItem.scrollHeight + 'px';
+                },0);
             }
-            setTimeout(function () {
-                tbItem.style.height = "auto";
-                tbItem.style.height = document.getElementById("tbItem").scrollHeight + 'px';
-            },0);
         });
         document.getElementById("tbItem").addEventListener("blur", function (event) {
             var tbItem = document.getElementById("tbItem");
