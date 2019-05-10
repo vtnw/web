@@ -34,13 +34,19 @@
                 tbItem.blur();
                 buildList();
             }
+            adjustText();
+        });
+        document.getElementById("tbItem").addEventListener("input", function (event) {
+            adjustText();
+        });
+        function adjustText(){
             if (tbItem.value == ""){
                 tbItem.style.height = "15px";
             } else {
                 tbItem.style.height = "auto";
                 tbItem.style.height = tbItem.scrollHeight + 'px';
             }
-        });
+        }
         function buildList() {
             var items = getCache();
             var dvItems = document.getElementById("dvItems");
