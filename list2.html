@@ -5,6 +5,7 @@
     <title>List</title>
 </head>
 <body>
+    <br />
     <textarea id="tbItem" style="border:1px solid #cccccc;border-radius:25px;width:94%;padding:10px;
         outline:none;font-size:16px;height:20px;max-height:200px;resize:none;font-family:inherit;"></textarea>
     <br /><br />
@@ -17,21 +18,26 @@
         document.title = (key == "") ? "List" : key.charAt(0).toUpperCase() + key.slice(1);
         document.getElementById("tbItem").addEventListener("keyup", function (event) {
             event.preventDefault();
-            var value = document.getElementById("tbItem").value.trim();
+            var tbItem = document.getElementById("tbItem");
+            var value = tbItem.value.trim();
             if (event.keyCode == 13 && value != "") {
                 var items = getCache();
                 items.push(value);
                 setCache(items);
-                document.getElementById("tbItem").value = "";
-                document.getElementById("tbItem").blur();
+                tbItem.value = "";
+                tbItem.blur();
                 buildList();
             }
             setTimeout(function () {
-                document.getElementById("tbItem").style.height = "auto";
-                if(value != ""){
-                    document.getElementById("tbItem").style.height = document.getElementById("tbItem").scrollHeight + 'px';
-                }
+                tbItem.style.height = "auto";
+                tbItem.style.height = document.getElementById("tbItem").scrollHeight + 'px';
             },0);
+        });
+        document.getElementById("tbItem").addEventListener("blur", function (event) {
+            var tbItem = document.getElementById("tbItem");
+            if(tbItem.value == ""){
+                tbItem.style.height = "20px";
+            }
         });
         function buildList() {
             var items = getCache();
