@@ -43,6 +43,7 @@
             if (tbItem.value == ""){
                 tbItem.style.height = "15px";
             } else {
+                tbItem.style.height = "auto";
                 tbItem.style.height = tbItem.scrollHeight + 'px';
             }
         }
@@ -71,7 +72,7 @@
                         items.splice(index, 1);
                         setCache(items);
                         buildList();
-                        document.getElementById("tbItem").value = this.innerHTML.replace(/(?:\<br\/\>)/g, "\r\n");
+                        document.getElementById("tbItem").value = this.innerHTML.replace(/(?:\<br\>)/g, "\r\n");
                         adjustText();
                     });
                 }
