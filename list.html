@@ -18,7 +18,7 @@
         document.getElementById("tbItem").addEventListener("keyup", function (event) {
             event.preventDefault();
             var tbItem = document.getElementById("tbItem");
-            var value = tbItem.value.trim();
+            var value = getDateString() + "\r\n" + "\r\n" + tbItem.value.trim();
             if (event.keyCode == 13 && value != "") {
                 var items = getCache();
                 items.push(value);
@@ -95,6 +95,12 @@
         }
         function getParam(name){
             return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(name).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+        }
+        function getDateString() {
+            var d = new Date();
+            return ('0' + (d.getMonth() + 1)).slice(-2)
+                    + ('0' + d.getDate()).slice(-2)
+                    + d.getFullYear();
         }
         buildList();
     </script>
