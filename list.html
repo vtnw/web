@@ -55,7 +55,7 @@
                     dvItem.setAttribute("url", linkData[1]);
                     dvItem.setAttribute("style", "text-decoration:underline;");
                     dvItem.addEventListener("click", function () {
-                        window.open(this.getAttribute("url"));
+                        location.href = this.getAttribute("url");
                     });
                 }
                 else if(mode == "e") {
