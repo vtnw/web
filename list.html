@@ -20,7 +20,7 @@
             event.preventDefault();
             var tbItem = document.getElementById("tbItem");
             var value = (date ? (getDateString() + "\r\n") : "") + tbItem.value.trim();
-            if (event.keyCode == 13 && value != "") {
+            if (event.keyCode == 13 && value != "" && value[value.length-1] != " ") {
                 var items = getCache();
                 items.push(value);
                 setCache(items);
