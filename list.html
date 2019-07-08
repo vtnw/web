@@ -19,7 +19,7 @@
         document.getElementById("tbItem").addEventListener("keyup", function (event) {
             event.preventDefault();
             var tbItem = document.getElementById("tbItem");
-            var value = (date ? (getDateString() + "\r\n" + "\r\n") : "") + tbItem.value.trim();
+            var value = (date ? (getDateString() + "\r\n") : "") + tbItem.value.trim();
             if (event.keyCode == 13 && value != "") {
                 var items = getCache();
                 items.push(value);
