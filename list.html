@@ -20,10 +20,9 @@
             event.preventDefault();
             var tbItem = document.getElementById("tbItem");
             var value = (date ? (getDateString() + "\r\n") : "") + tbItem.value;
-            alert(value[value.length-1] != " ");alert(value[value.length-1]);
-            if (event.keyCode == 13 && value != "" && value[value.length-1] != " ") {
+            if (event.keyCode == 13 && value != "" && value[value.length-2] != " ") {
                 var items = getCache();
-                items.push(value);
+                items.push(value.trim());
                 setCache(items);
                 tbItem.value = "";
                 tbItem.blur();
