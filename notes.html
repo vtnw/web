@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Notes</title>
+	<style>
+		textarea {
+            		width:97%;
+            		height:87vh;
+            		border:none;
+            		outline: none;
+            		padding: 5px;
+            		font-size:16px;
+            		font-family:inherit;
+            		resize:none;
+        	}
+		.dvNote {
+			margin-left:10px;
+			height:40px;
+		}
+		.dvNotes {
+			height:80vh;
+			overflow-y:auto;
+		}
+		.spnLabel {
+			font-weight:bold;
+			font-size:28px;
+			padding:5px 10px 5px 10px;
+			vertical-align:bottom;
+		}
+		.spnShort {
+			padding:5px 5px 5px 5px;
+		}
+		.tbSearch {
+			border:1px solid #cccccc;
+			border-radius:25px;
+			width:75%;
+			padding: 5px 10px 5px 10px;
+			outline:none;
+			font-size:16px;
+			font-family:inherit;
+		}
+		.spnOptions {
+			width:81.5%;
+			display:none;
+			text-align:center;
+		}
+        	::-webkit-scrollbar { 
+        		display: none; 
+        	}
+	</style>
+	<script>
+		var noteKey = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("n").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+		var mode = "edit";
+		var mergeSource;
+		var backupKeyEnd = "<bkp" + "kend>";
+		var backupContentEnd = "<bkp" + "cend>";
+		function initialize() {
+			if (noteKey.length > 0) {
+				load();
+			} 
+			else {
+				loadList();
+			}
+		}
+        	function load() {
+			document.getElementById("dvMain").style.display = "none";
+			document.getElementById("tbNote").value = localStorage.getItem(noteKey);
+		}
+        	function loadList(searchMode) {
+			document.getElementById("dvNote").style.display = "none";
+			var query = document.getElementById("tbSearch").value.toLowerCase();
+			var keys = [];
+			for(var key in localStorage){
+				if(localStorage.hasOwnProperty(key) 
+					&& (searchMode != "title" || key.toLowerCase().indexOf(query) >= 0)
+					&& (searchMode != "content" || localStorage.getItem(key).toLowerCase().indexOf(query) >= 0)){
+					keys.push(key);
+				}
+			}
+			keys.sort(function(a,b){return a.localeCompare(b)});
+			var dvNotes = document.getElementById("dvNotes");
+			dvNotes.innerHTML = "";
+			for(var i=0;i<keys.length;i++){
+				var dvNote = document.createElement('div');
+				dvNote.className = "dvNote";
+				dvNote.innerHTML = keys[i];
+				dvNote.addEventListener("click", function () {
+					if (mode == "edit") {
+		                        	location.href = "notes.html?n=" + this.innerHTML;
+					}
+					else if (mode == "delete" && confirm("Delete " + this.innerHTML + "?")) {
+						localStorage.removeItem(this.innerHTML);
+						loadList(searchMode);
+					}
+					else if (mode == "merge") {
+						if (mergeSource == null) {
+							mergeSource = this.innerHTML;
+						}
+						else {
+							if(confirm("Merge " + mergeSource + " with " + this.innerHTML + "?")) {
+								localStorage.setItem(this.innerHTML, localStorage.getItem(mergeSource) + "\r\n\r\n" + localStorage.getItem(this.innerHTML));
+								localStorage.removeItem(mergeSource);
+								mergeSource = null;
+								loadList(searchMode);
+							}
+						}
+					}
+					else if (mode == "export" && confirm("Export " + this.innerHTML + "?")) {
+						exportToFile(this.innerHTML, localStorage.getItem(this.innerHTML));
+					}					
+		
+                		});
+				dvNotes.appendChild(dvNote);
+			}
+        	}
+		function create() {
+			noteKey = prompt("Name?");
+			if (noteKey.length > 0) {
+				location.href = "notes.html?n=" + noteKey.toLowerCase();
+			}
+		}
+		function save() {
+			var data = document.getElementById("tbNote").value;
+			if (data.length > 0) {
+				localStorage.setItem(noteKey, data);
+			}
+			else {
+				localStorage.removeItem(noteKey);
+			}
+		}
+		function loadFile() {
+			var fileReader = new FileReader();
+		      	fileReader.onload = function(event) {
+          			localStorage.setItem(noteKey.toLowerCase(), event.target.result);
+				document.getElementById("fileImport").value = "";
+				location.href = "notes.html?n=" + noteKey;
+      			};
+			noteKey = prompt("Name?");
+			if (noteKey.length > 0) {
+				fileReader.readAsText(document.getElementById("fileImport").files[0], "UTF-8");
+			}
+		}
+		function search() {
+			event.preventDefault();
+			if (document.getElementById("tbSearch").value != "") {
+	            		if (event.keyCode == 13) {
+	                		loadList("content");
+	            		}
+				else {
+					loadList("title");
+				}
+			}
+			else {
+				loadList();
+			}
+		}
+		function doAction(action) {			
+			if (action == 1) {
+				mode = "delete";
+				setColor("spnDelete");
+			}
+			else if (action == 2) {
+				mode = "export";
+				setColor("spnExport");
+			}
+			else if (action == 3) {
+				document.getElementById('fileImport').click();
+			}
+			else if (action == 4) {
+				mode = "merge";
+				setColor("spnMerge");
+			}
+			else if (action == 5) {
+				backup();
+			}
+			else if (action == 6) {
+				if (confirm("Restore?")) { document.getElementById('fileRestore').click(); }
+			}
+			else if (action == 7) {
+				if (confirm("Reset?")) { reset(); }
+			}
+			else {
+				mode = "edit";
+				setColor(null);
+			}
+		}
+		function showOptions() {
+			if(document.getElementById("spnOptions").style.display == "inline-block") {
+				document.getElementById("spnOptions").style.display = "none";
+				document.getElementById("tbSearch").style.display = "inline";
+				doAction(0);
+			}
+			else {
+				document.getElementById("spnOptions").style.display = "inline-block";
+				document.getElementById("tbSearch").style.display = "none";
+			}
+		}
+		function setColor(spnId) {
+			document.getElementById("spnDelete").style.color = "black";
+			document.getElementById("spnExport").style.color = "black";
+			document.getElementById("spnMerge").style.color = "black";
+			if (spnId != null) {
+				document.getElementById(spnId).style.color = "red";
+			}
+		}
+		function reset() {
+			for(var key in localStorage){
+				localStorage.removeItem(key);
+			}
+			location.reload();
+		}
+		function backup() {
+			var data;
+			for(var key in localStorage){
+				if(localStorage.hasOwnProperty(key)) {
+					data = (data) ? data + backupContentEnd : "";
+					data = data + key + backupKeyEnd + localStorage.getItem(key);
+				}
+			}
+			exportToFile("notesBackup_" + getFormattedDate(), data);
+			showOptions();
+		}
+		function restoreFile() {
+			var fileReader = new FileReader();
+		      	fileReader.onload = function(event) {
+          			var allData = event.target.result;
+				var notes = allData.split(backupContentEnd);
+				for(var i=0;i<notes.length;i++) {
+					var noteData = notes[i].split(backupKeyEnd);
+					localStorage.setItem(noteData[0], noteData[1]);
+				}
+				document.getElementById("fileRestore").value = "";
+				location.reload();
+      			};
+			fileReader.readAsText(document.getElementById("fileRestore").files[0], "UTF-8");
+		}
+		function exportToFile(name, data) {
+			var a = document.createElement("a");
+			var name = prompt("Name?", name + ".txt");
+			a.download = name;
+      			a.innerHTML = "export";
+      			a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
+      			a.style.display = "none";
+      			a.onclick = function (event) { document.body.removeChild(event.target); };
+      			if (name) { document.body.appendChild(a);a.click(); }
+		}
+        	function getFormattedDate() {
+            		var d = new Date();
+            		d = d.getFullYear()    
+				+ ('0' + (d.getMonth() + 1)).slice(-2)
+                		+ ('0' + d.getDate()).slice(-2)
+                		+ ('0' + d.getHours()).slice(-2)
+                		+ ('0' + d.getMinutes()).slice(-2)
+                		+ ('0' + d.getSeconds()).slice(-2);
+            		return d;
+        	}
+    </script>
+</head>
+<body onload="initialize();">
+	<div id="dvMain">
+		<div>
+			<span class="spnLabel spnShort" onclick="create();">+</span>
+				<input type="text" class="tbSearch" id="tbSearch" onkeyup="search();" autocapitalize="off"/>
+				<span id="spnOptions" class="spnOptions">
+					<span id="spnDelete" class="spnLabel" onclick="doAction(1);">-</span>
+					<span id="spnExport" class="spnLabel" onclick="doAction(2);">></span>
+					<span id="spnImport" class="spnLabel" onclick="doAction(3);"><</span>
+					<span id="spnMerge" class="spnLabel" onclick="doAction(4);">#</span>
+					<span id="spnBackup" class="spnLabel" onclick="doAction(5);">?</span>
+					<span id="spnRestore" class="spnLabel" onclick="doAction(6);">!</span>
+					<span id="spnReset" class="spnLabel" onclick="doAction(7);">~</span>
+				</span>
+			<span id="spnSettings" class="spnLabel spnShort" onclick="showOptions();">=</span>
+			<input type="file" id="fileImport" onchange="loadFile();" style="display:none;" />
+			<input type="file" id="fileRestore" onchange="restoreFile();" style="display:none;" />
+			<br><br>
+		</div>
+		<div id="dvNotes" class="dvNotes">
+		</div>
+    	</div>
+	<div id="dvNote">
+        	<textarea id="tbNote" onkeyup="save();" onpaste="save();" onclick="save();"></textarea>
+    	</div>
+</body>
+</html>
