@@ -55,14 +55,13 @@
         	}
 	</style>
 	<script>
-		var dbName = 'vtrtdb';
+		var dbName = 'notesdb';
 		var dbVersion = 1;
 		var storeName = 'notes';
 		var notesDb;
 		
 		function initDb(callback) {
 			var request = indexedDB.open(dbName, dbVersion);
-
 			request.onupgradeneeded = function() {
     				var store = request.result.createObjectStore(storeName,{keyPath: "id", autoIncrement: "true"}); 
 				store.createIndex("date", "date");
@@ -72,9 +71,9 @@
 				callback();
  			}
 		}
-		function add(note, callback) {
+		function add(note, date, callback) {
 			var store = notesDb.transaction(storeName, "readwrite").objectStore(storeName);
-			var request = store.put({"note":note, "date": new Date()});
+			var request = store.put({"note":note, "date": (date != null) ? date : new Date()});
 			request.onsuccess = function() { callback(request.result); }
 		}
 		function update(id, note, callback) {
@@ -121,7 +120,6 @@
 		}
 
 		var noteId, noteText, searchMode;
-		var backupEnd = "<bkp" + "end>";
 		var descLength = 100;
 
 		function initialize() {			
@@ -185,7 +183,7 @@
 				if(noteId > 0) {
 					update(noteId, data, callback);
 				} else {
-					add(data, callback);
+					add(data, null, callback);
 				}
 			} else if (noteId > 0 && data != noteText){				
 				remove(noteId, callback);
@@ -214,12 +212,7 @@
 			} 
 			else if (confirm("Export all?")) {
 				getAll(function(notes) {
-					data = "";
-					for(var i=0;i<notes.length;i++){
-						data = (data) ? data + backupEnd : "";
-						data = data + notes[i].note;
-					}
-					exportToFile("notesBackup_" + getFormattedDate(), data);
+					exportToFile("notesBackup_" + getFormattedDate(), JSON.stringify(notes));
 				});
 			}
 		}
@@ -234,18 +227,21 @@
 		function importFile() {
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(event) {
-				if(confirm("Import?")) {
-          				var allData = event.target.result;
-					var notes = allData.split(backupEnd);
-					var addedCount = 0;
-					for(var i=0;i<notes.length;i++) {
-						add(notes[i], function() { 
-							addedCount++; 
-							if(addedCount == notes.length) {
-								getAll(loadList); 
-							}
-						});
-					}
+				var notes = [];
+				if(confirm("Import note?")) {
+          				notes.push({note: event.target.result, date: new Date()});
+				}
+				else if(confirm("Import all?")) {
+					notes = JSON.parse(event.target.result);
+				}
+				var addedCount = 0;
+				for(var i=0;i<notes.length;i++) {
+					add(notes[i].note, new Date(notes[i].date), function() { 
+						addedCount++; 
+						if(addedCount == notes.length) {
+							getAll(loadList); 
+						}
+					});
 				}
 				document.getElementById("fileImport").value = "";				
       			};
