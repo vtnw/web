@@ -14,9 +14,9 @@
             		audio: true,
             		video: false
           	});
-		const mimeType = 'audio/ogg';
+		const mimeType = 'audio/webm';
           	let chunks = [];
-          	const recorder = new MediaRecorder(stream, { type: mimeType, bufferLen: 4096});
+          	const recorder = new MediaRecorder(stream, { type: mimeType, bitsPerSecond: 128000});
 		recorder.addEventListener('dataavailable', event => {
 	     		if (typeof event.data === 'undefined') return;
 	       		if (event.data.size === 0) return;
