@@ -15,7 +15,8 @@
             		video: false
           	});
 		let chunks = [];
-          	const recorder = new MediaRecorder(stream, { type: "audio/webm", bitsPerSecond: 32000});
+		const mimeType = "audio/webm";
+          	const recorder = new MediaRecorder(stream, { type: mimeType, bitsPerSecond: 32000});
 		recorder.addEventListener("dataavailable", event => {
 	     		if (typeof event.data === "undefined") return;
 	       		if (event.data.size === 0) return;
