@@ -16,10 +16,7 @@
           	});
 		const mimeType = 'audio/ogg';
           	let chunks = [];
-          	const recorder = new MediaRecorder(stream);
-		//recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-		recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-    		recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+          	const recorder = new MediaRecorder(stream, { type: mimeType, bufferLen: 4096});
 		recorder.addEventListener('dataavailable', event => {
 	     		if (typeof event.data === 'undefined') return;
 	       		if (event.data.size === 0) return;
