@@ -2,61 +2,70 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Camera</title>
-	<script>
-		var imgHeight = 750;
-		var imgQuality = 0.8;
-		
-		/*document.onclick = function () {
-			document.getElementById("fileImage").click();
-		};*/
-		function downloadImage() {
-			var name = prompt("Name?");
-			var a = document.createElement("a");
-			a.download = "IMG_" + getFormattedDate() + "_" + ((name) ? name : "temp") + ".jpg";
-      			a.innerHTML = "export";
-      			a.href = document.getElementById("img").src;
-      			a.style.display = "none";
-      			a.onclick = function (event) { event.stopPropagation(); document.body.removeChild(event.target); };
-      			document.body.appendChild(a);
-			a.click();
-			delete a;
-		}
-		function importImage() {
-			var fileReader = new FileReader();
-		      	fileReader.onload = function(e) {
-				var image = new Image();
-        			image.onload = function() {
-                			var canvas = document.createElement('canvas');
-					var ctx = canvas.getContext('2d');
-					var w = image.width;
-					var h = image.height;
-					w = imgHeight/h*w;
-					h = imgHeight;
-					canvas.width = w;
-                			canvas.height = h;
-					ctx.drawImage(this, 0, 0, w, h);
-                			document.getElementById("img").src = canvas.toDataURL("image/jpeg", imgQuality);
-            			};
-        			image.src = e.target.result;
-			};
-			fileReader.readAsDataURL(document.getElementById("fileImage").files[0], "UTF-8");
-		}
-		function getFormattedDate() {
-            		d = new Date();
-            		d = d.getFullYear()    
-				+ ('0' + (d.getMonth() + 1)).slice(-2)
-                		+ ('0' + d.getDate()).slice(-2)
-                		+ ('0' + d.getHours()).slice(-2)
-                		+ ('0' + d.getMinutes()).slice(-2)
-                		+ ('0' + d.getSeconds()).slice(-2);
-            		return d;
-        	}
-    </script>
+	<title>Audio</title>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+	const getMic = document.getElementById('mic');
+    	const recordButton = document.getElementById('record');
+    	const list = document.getElementById('recordings');
+	getMic.addEventListener('click', async () => {
+        	getMic.setAttribute('hidden', 'hidden');
+        	const stream = await navigator.mediaDevices.getUserMedia({
+            		audio: true,
+            		video: false
+          	});
+		const mimeType = 'audio/webm';
+          	let chunks = [];
+          	const recorder = new MediaRecorder(stream, { type: mimeType });
+		recorder.addEventListener('dataavailable', event => {
+	     		if (typeof event.data === 'undefined') return;
+	       		if (event.data.size === 0) return;
+	       		chunks.push(event.data);
+	     	});
+	   	recorder.addEventListener('stop', () => {
+	     		const recording = new Blob(chunks, { type: mimeType });
+	     		renderRecording(recording, list);
+	     		chunks = [];
+	   	});
+		recordButton.removeAttribute('hidden');
+         	recordButton.addEventListener('click', () => {
+           		if (recorder.state === 'inactive') {
+             			recorder.start();
+             			recordButton.innerText = 'Stop';
+           		} else {
+             			recorder.stop();
+             			recordButton.innerText = 'Record';
+           		}
+         	});
+	});
+  });
+  function renderRecording(blob, list) {
+    const blobUrl = URL.createObjectURL(blob);
+    const li = document.createElement('li');
+    const audio = document.createElement('audio');
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', blobUrl);
+    const now = new Date();
+    anchor.setAttribute(
+      'download',
+      `recording-${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDay().toString().padStart(2, '0')}--${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}.webm`
+    );
+    anchor.innerText = 'Download';
+    audio.setAttribute('src', blobUrl);
+    audio.setAttribute('controls', 'controls');
+    li.appendChild(audio);
+    li.appendChild(anchor);
+    list.appendChild(li);
+  }
+</script>
 </head>
 <body>
-	<input type="file" id="fileImage" accept="image/*" capture onchange="importImage();" style="display:none;" />
-	<img id="img" style="width:100%;" onclick="event.stopPropagation();downloadImage();" />
-	<input type="file" accept="audio/*" capture>
+	<div>
+		<div class="controls">
+        		<button type="button" id="mic">Get Microphone</button>
+        		<button type="button" id="record" hidden>Record</button>
+      		</div>
+      		<ul id="recordings"></ul>
+	</div>
 </body>
 </html>
