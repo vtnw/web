@@ -28,7 +28,7 @@
 		::-webkit-scrollbar { 
         		display: none; 
         	}
-		audio::-webkit-media-controls-play-button,audio::-webkit-media-controls-panel,audio::-webkit-media-controls {
+		audio::-webkit-media-controls-play-button,audio::-webkit-media-controls-panel {
 			background-color:white;
 		}
 		audio::-webkit-media-controls-volume-slider, audio::-webkit-media-controls-mute-button, audio::-webkit-media-controls-volume-slider-container {
@@ -108,8 +108,7 @@
 	   		recorder.addEventListener("stop", () => {
 	     			var recording = new Blob(chunks, { type: mimeType });
 				var name = prompt("Name?");
-	     			//add(recording, (name) ? name : "temp", null, function(){getAll(pageSize, loadList);});
-				var reader = new FileReader();
+	     			var reader = new FileReader();
 				reader.onload = function(event) {
   					add(event.target.result, (name) ? name : "temp", null, function(){getAll(pageSize, loadList);});
   				};
