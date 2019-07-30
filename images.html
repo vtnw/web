@@ -30,20 +30,85 @@
         	}
 	</style>
 	<script>
+		var dbName = 'imagesdb';
+		var dbVersion = 1;
+		var storeName = 'images';
+		var imagesDb;
+		
+		function initDb(callback) {
+			var request = indexedDB.open(dbName, dbVersion);
+			request.onupgradeneeded = function() {
+    				var store = request.result.createObjectStore(storeName,{keyPath: "id", autoIncrement: "true"}); 
+				store.createIndex("date", "date");
+ 			}
+			request.onsuccess = function() {
+    				imagesDb = request.result;
+				callback();
+ 			}
+		}
+		function add(imgData, name, date, callback) {
+			var store = imagesDb.transaction(storeName, "readwrite").objectStore(storeName);
+			var request = store.put({"image":imgData, "name": name, date: (date != null) ? date : new Date()});
+			request.onsuccess = function() { callback(request.result); }
+		}
+		function getAll(maxCount, callback) {
+			var count = 0;
+        		var store = imagesDb.transaction(storeName, "readwrite").objectStore(storeName);
+        		var request = store.index("date").openCursor(null, "prev");
+			var images = [];
+        		request.onsuccess = function(event) {				
+      				var cursor = event.target.result;
+          			if (cursor && (maxCount == null || count < maxCount)) {
+					count++;
+                			images.push(cursor.value);
+                			cursor.continue();
+          			}
+				else {
+					callback(images);
+				}
+        		};   
+		}
+		function remove(id, callback) {
+			var store = imagesDb.transaction(storeName, "readwrite").objectStore(storeName);
+			var request = store.delete(id);
+			request.onsuccess = function() { callback(request.result); }
+		}
+		function clear(callback) {
+			var store = imagesDb.transaction(storeName, "readwrite").objectStore(storeName);
+    			var request = store.clear(); 
+    			request.onsuccess = function() { callback(request.result); } 		
+		}
+		function deleteDb() {
+			imagesDb.close();
+			var request = indexedDB.deleteDatabase(dbName);
+			request.onsuccess = function(event) {
+  				alert("Delete successful");
+			};
+		}
+
 		var imgHeight = 750;
 		var imgQuality = 0.8;
-		
+		var pageSize = 10;
+
+		function initialize() {			
+			initDb(function(){getAll(pageSize, loadList)});
+		}		
 		function loadList(images) {
 			var dvImage = document.getElementById("dvImages");
 			dvImage.innerHTML = "";
 			for(var i=0;i< images.length;i++){
+				var dvImage = document.createElement("div");
+				dvImage.id = audios[i].id;
+				dvImage.innerText = images[i].name;
+				dvImage.addEventListener("click", function () {
+					if(confirm("Delete?")) { remove(parseInt(this.getAttribute("id")), function() { getAll(pageSize, loadList); }); }
+                		});
+				
 				var img = document.createElement("img");
 				img.className = "img";
 				img.src = images[i].image;
-				img.id = images[i].id;
-				img.addEventListener("click", function () {
-					if(confirm("Delete?")) { remove(parseInt(this.getAttribute("id")), function() { getAll(pageSize, loadList); }); }
-                		});
+				
+				dvImages.appendChild(dvImage);
 				dvImages.appendChild(img);
 			}
         	}
@@ -81,7 +146,7 @@
 			getAll(null, function(images) {
 				for(var i=0;i<images.length;i++) {
 					var a = document.createElement("a");
-					a.download = getFormattedDate(images[i].date) + "_" + images[i].name + ".jpg";
+					a.download = "IMG_" + getFormattedDate(images[i].date) + "_" + images[i].name + ".jpg";
       					a.innerHTML = "export";
       					a.href = images[i].image;
       					a.style.display = "none";
