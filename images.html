@@ -98,7 +98,7 @@
 			dvImage.innerHTML = "";
 			for(var i=0;i< images.length;i++){
 				var dvImage = document.createElement("div");
-				dvImage.id = audios[i].id;
+				dvImage.id = images[i].id;
 				dvImage.innerText = images[i].name;
 				dvImage.addEventListener("click", function () {
 					if(confirm("Delete?")) { remove(parseInt(this.getAttribute("id")), function() { getAll(pageSize, loadList); }); }
