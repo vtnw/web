@@ -7,7 +7,7 @@
 		#dvOptions {
 			margin: 15px 0px 15px 0px;
 		}
-		#dvImages {
+		#dvAudios {
 			height:685px;
 			overflow-y:auto;
 		}
@@ -20,10 +20,6 @@
 			font-size:28px;
 			padding:5px 5px 5px 5px;
 			vertical-align:bottom;
-		}
-		.img {
-			width:100%;
-			display:block;
 		}
 		::-webkit-scrollbar { 
         		display: none; 
@@ -160,7 +156,7 @@
 					var a = document.createElement("a");
 					a.download = "AUD_" + getFormattedDate(audios[i].date) + "_" + audios[i].name + ".webm";
       					a.innerHTML = "export";
-      					a.href = URL.createObjectURL(audios[i].audio);
+      					a.href = audios[i].audio;
       					a.style.display = "none";
       					a.onclick = function (event) { document.body.removeChild(event.target); };
       					document.body.appendChild(a);a.click();
@@ -223,14 +219,6 @@
                 		+ ('0' + d.getSeconds()).slice(-2);
             		return d;
         	}
-		function renderRecording(blob) {
-    			const blobUrl = URL.createObjectURL(blob);
-    			const audio = document.createElement("audio");
-    			const now = new Date();
-    			audio.setAttribute("src", blobUrl);
-    			audio.setAttribute("controls", "controls");
-    			document.getElementById("dvAudios").appendChild(audio);
-		}
     </script>
 </head>
 <body onload="initialize();">
