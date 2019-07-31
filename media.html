@@ -15,7 +15,7 @@
             		resize:none;
         	}
 		.dvOptions {
-			width:98%;			
+			width:99%;border:1px solid red;			
 		}
 		.dvNote {
 			margin-left:10px;
@@ -222,8 +222,8 @@
 				if (mode == "N") {
 					title = items[i].content.split("\n")[0];
 					desc = items[i].content.substring(title.length, descLength).replace(new RegExp("\n", 'g'), " ");
-					if((searchMode != "title" && title.toLowerCase().indexOf(query) >= 0)
-						|| (searchMode != "content" && items[i].content.toLowerCase().indexOf(query) >= 0)){
+					if((searchMode != "title" || title.toLowerCase().indexOf(query) >= 0)
+						&& (searchMode != "content" || items[i].content.toLowerCase().indexOf(query) >= 0)){
 						items[i].title = title;
 						items[i].desc = desc;
 						matchItems.push(items[i]);
