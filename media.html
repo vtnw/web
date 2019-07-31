@@ -16,6 +16,7 @@
         	}
 		.dvOptions {
 			margin: 15px 0px 15px 0px;
+			text-align: justify;
 		}
 		.dvNote {
 			margin-left:15px;
@@ -28,7 +29,7 @@
 		.spnLabel {
 			font-weight:bold;
 			font-size:28px;
-			padding:5px 20px 5px 5px;
+			padding:5px 5px 5px 5px;
 			vertical-align:bottom;
 		}
 		.tbSearch {
@@ -467,8 +468,14 @@
 			setDbMode(mode);
 		}
 		function setSize() {
-			document.getElementById("tbNote").style.height = (window.innerHeight  > 600) ? "675px" : "415px";
-			document.getElementById("dvNotes").style.height = (window.innerHeight  > 600) ? "685px" : "425px";
+			if (window.innerHeight  > 600) {
+				document.getElementById("tbNote").style.height = "675px";
+				document.getElementById("dvNotes").style.height = "685px";
+			} else {
+				document.getElementById("tbNote").style.height = "415px";
+				document.getElementById("dvNotes").style.height = "425px";
+				toggleSearch(false);
+			}
 		}
 		function exportToFile(name, data) {
 			var a = document.createElement("a");
