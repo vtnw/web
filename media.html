@@ -76,7 +76,7 @@
 		var dbName, storeName, db, notesDb, imagesDb, audiosDb;
 		
 		function initDb(callback) {
-			var notesRequest = indexedDB.open("notesdb", dbVersion);
+			var notesRequest = indexedDB.open("notesDb", dbVersion);
 			notesRequest.onupgradeneeded = function() {
     				var store = notesRequest.result.createObjectStore("notes",{keyPath: "id", autoIncrement: "true"}); 
 				store.createIndex("date", "date");
