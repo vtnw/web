@@ -15,9 +15,13 @@
             		resize:none;
         	}
 		.dvOptions {
-			width:97%;
+			width:97%;border:1px solid red;
 			margin: 15px 0px 15px 0px;
+		}
+		.spnOptions {
+			width:100%;border:1px solid green;
 			text-align: justify;
+			display:inline-block;
 		}
 		.dvNote {
 			margin-left:15px;
@@ -507,7 +511,7 @@
         	<textarea id="tbNote"></textarea>
     	</div>
 	<div id="dvOptions" class="dvOptions">
-		<span id="spnOptions">
+		<span id="spnOptions" class="spnOptions">
 			<span class="spnLabel" id="spnSettings" onclick="showOptions();">=</span>
 			<span class="spnLabel" id="spnImages" onclick="setMode('I');">i</span>
 			<span class="spnLabel" id="spnNotes" onclick="setMode('N');">n</span>
