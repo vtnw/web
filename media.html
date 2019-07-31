@@ -67,15 +67,13 @@
 		audio {
 			padding-bottom:10px;
 		}
-    ::-webkit-scrollbar { 
-    	display: none; 
-    }
+		::-webkit-scrollbar { 
+			display: none; 
+		}
 	</style>
 	<script>
-		var dbName;
 		var dbVersion = 1;
-		var storeName;
-		var db, notesDb, imagesDb, audiosDb;
+		var dbName, storeName, db, notesDb, imagesDb, audiosDb;
 		
 		function initDb(callback) {
 			var notesRequest = indexedDB.open("notesdb", dbVersion);
@@ -105,15 +103,15 @@
  			}
 		}
 		function setDbMode(mode) {
-			if(mode == "N") {
+			if(mode == noteMode) {
 				db = notesDb;
 				storeName = "notes";
 				dbName = "notesDb";
-			} else if(mode == "I") {
+			} else if(mode == imageMode) {
 				db = imagesDb;
 				storeName = "images";
 				dbName = "imagesDb";
-			} else if(mode == "A") {
+			} else if(mode == audioMode) {
 				db = audiosDb;
 				storeName = "audios";
 				dbName = "audiosDb";
@@ -168,13 +166,15 @@
 			};
 		}
 
-		var noteId, noteText, searchMode, mode;
+		var noteId, noteText, searchMode, mode, recorder;
 		var descLength = 100;
 		var imgHeight = 750;
 		var imgQuality = 0.8;
-		var recorder;
 		var bitRate = 32000;
 		var mimeType = "audio/webm";
+		var noteMode = "n";
+		var imageMode = "i";
+		var audioMode = "a";
 
 		window.addEventListener("DOMContentLoaded", async () => {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true,video: false });
@@ -197,7 +197,7 @@
 		});
 
 		function initialize() {	
-			initDb(function(){ setMode("N");});
+			initDb(function(){ setMode(noteMode);});
 		}
         	function loadItem(item) {
 			switchMode("edit");
@@ -219,7 +219,7 @@
 			var matchItems = [];
 			var title, desc;
 			for(var i=0;i<items.length;i++){
-				if (mode == "N") {
+				if (mode == noteMode) {
 					title = items[i].content.split("\n")[0];
 					desc = items[i].content.substring(title.length, descLength).replace(new RegExp("\n", 'g'), " ");
 					if((searchMode != "title" || title.toLowerCase().indexOf(query) >= 0)
@@ -242,7 +242,7 @@
 			dvContent.innerHTML = "";
 			dvContent.scrollTop = 0;
 			for(var i=0;i<matchItems.length;i++){
-				if (mode == "N") {
+				if (mode == nodeMode) {
 					var dvNote = document.createElement('div');
 					dvNote.className = "dvNote";
 					dvNote.id = matchItems[i].id;
@@ -255,7 +255,7 @@
 						get(parseInt(this.getAttribute("id")), function(item) { loadItem(item) });
                 			});
 					dvContent.appendChild(dvNote);
-				} else if (mode == "I") {
+				} else if (mode == imageMode) {
 					var dvImage = document.createElement("div");
 					dvImage.id = matchItems[i].id;
 					dvImage.innerText = "IMG_" + getFormattedDate(matchItems[i].date) + ".jpg";
@@ -266,7 +266,7 @@
 					img.src = matchItems[i].content;				
 					dvContent.appendChild(dvImage);
 					dvContent.appendChild(img);					
-				} else if (mode == "A") {
+				} else if (mode == audioMode) {
 					var dvAudio = document.createElement("div");
 					dvAudio.id = matchItems[i].id;
 					dvAudio.innerText = "AUD_" + getFormattedDate(matchItems[i].date) + ".webm";
@@ -290,15 +290,15 @@
 				document.getElementById("tbNote").value = "";
 				document.getElementById("tbNote").focus();
 			};
-			if (mode == "N") {
+			if (mode == noteMode) {
 				if(document.getElementById("dvNote").style.display == "block") {
 					saveNote(newNote);
 				} else {
 					newNote();
 				}
-			} else if (mode == "I") {
+			} else if (mode == imageMode) {
 				document.getElementById('fileImage').click();
-			} else if (mode == "A") {
+			} else if (mode == audioMode) {
 				if (recorder.state === "inactive") {
              				recorder.start();
              				spnAdd.style.color = "red";
@@ -345,7 +345,7 @@
 		}
 		function searchItems(isFullText) {
 			searchMode = isFullText ? "content" : "title";
-			if(mode == "N" && document.getElementById("dvNote").style.display == "block") {
+			if(mode == noteMode && document.getElementById("dvNote").style.display == "block") {
 				saveNote(function() { getAll(loadList); });
 			} else {
 				getAll(loadList);
@@ -354,7 +354,7 @@
 		function exportItems() {
 			var data = document.getElementById("tbNote").value;
 			var title = data.split("\n")[0]
-			if (mode == "N" && title != "" && confirm("Export - " + title + "?")) {
+			if (mode == noteMode && title != "" && confirm("Export - " + title + "?")) {
 				exportToFile(title, data);
 			} 
 			else if (confirm("Export all?")) {
@@ -375,13 +375,13 @@
 			getAll(function(items) {
 				for(var i=0;i<items.length;i++) {
 					var a = document.createElement("a");
-					if (mode == "N") {
+					if (mode == noteMode) {
 						a.download = items[i].content.split("\n")[0] + getFormattedDate(items[i].date) + ".txt";
       						a.href = window.URL.createObjectURL(new Blob([items[i].content], { type: "text/plain" }));
-					} else if (mode == "I") {
+					} else if (mode == imageMode) {
 						a.download = "IMG_" + getFormattedDate(items[i].date) + ".jpg";
       						a.href = items[i].content;
-					} else if (mode == "A") {					
+					} else if (mode == audioMode) {					
 						a.download = "AUD_" + getFormattedDate(items[i].date) + ".webm";
       						a.href = items[i].content;
 					}
@@ -397,7 +397,7 @@
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(event) {
 				var items = [];
-				if(mode == "N" && confirm("Import note?")) {
+				if(mode == noteMode && confirm("Import note?")) {
           				items.push({content: event.target.result, date: new Date()});
 				}
 				else if(confirm("Import all?")) {
@@ -428,7 +428,7 @@
 			}
 		}
 		function showOptions() {
-			if(mode == "N" && document.getElementById("dvNote").style.display == "block") {
+			if(mode == noteMode && document.getElementById("dvNote").style.display == "block") {
 				saveNote(function(){ getAll(loadList); });
 			}
 			else if (document.getElementById("tbSearch").value != "") {
@@ -459,11 +459,11 @@
 			document.getElementById("spnNotes").style.textDecoration = "";
 			document.getElementById("spnImages").style.textDecoration = "";
 			document.getElementById("spnAudios").style.textDecoration = "";
-			if(mode == "N") {
+			if(mode == noteMode) {
 				document.getElementById("spnNotes").style.textDecoration = "underline";
-			} else if(mode == "I") {
+			} else if(mode == imageMode) {
 				document.getElementById("spnImages").style.textDecoration = "underline";
-			} else if(mode == "A") {
+			} else if(mode == audioMode) {
 				document.getElementById("spnAudios").style.textDecoration = "underline";
 			}
 			setDbMode(mode);
@@ -508,10 +508,10 @@
     	</div>
 	<div id="dvOptions" class="dvOptions">
 		<span id="spnOptions">
-			<span class="spnLabel" id="spnSettings" onclick="showOptions();">=</span>
-			<span class="spnLabel" id="spnImages" onclick="setMode('I');">i</span>
-			<span class="spnLabel" id="spnNotes" onclick="setMode('N');">n</span>
-			<span class="spnLabel" id="spnAudios" onclick="setMode('A');">a</span>
+			<span class="spnLabel" id="spnSettings" onclick="showOptions();">=</span>			
+			<span class="spnLabel" id="spnNotes" onclick="setMode('n');">n</span>
+			<span class="spnLabel" id="spnImages" onclick="setMode('i');">i</span>
+			<span class="spnLabel" id="spnAudios" onclick="setMode('a');">a</span>
 			<span class="spnLabel" onclick="toggleSearch(true);">~</span>
 			<span class="spnLabel" id="spnAdd" onclick="createItem();">+</span>
 		</span>
