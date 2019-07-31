@@ -21,14 +21,14 @@
 			margin-left:15px;
 			height:60px;
 		}
-		.dvContent {
+		.dvNotes {
 			height:685px;
 			overflow-y:auto;
 		}
 		.spnLabel {
 			font-weight:bold;
 			font-size:28px;
-			padding:5px 150px 5px 5px;
+			padding:5px 5px 5px 5px;
 			vertical-align:bottom;
 		}
 		.tbSearch {
@@ -39,7 +39,6 @@
 			outline:none;
 			font-size:16px;
 			font-family:inherit;
-			display:none;
 		}
 		.dvDesc {
 			font-style:italic;
@@ -51,236 +50,120 @@
 			white-space:nowrap;
 			color:#888888;
 		}
-		img {
-			width:100%;
-			display:block;
-			padding-bottom:10px;
-		}
-		audio::-webkit-media-controls-play-button,audio::-webkit-media-controls-panel {
-			background-color:white;
-		}
-		audio::-webkit-media-controls-volume-slider, audio::-webkit-media-controls-mute-button, audio::-webkit-media-controls-volume-slider-container {
-			display:none;
-		}
-		audio {
-			padding-bottom:10px;
-		}
         	::-webkit-scrollbar { 
         		display: none; 
         	}
 	</style>
 	<script>
-		var dbName;
+		var dbName = 'notesdb';
 		var dbVersion = 1;
-		var storeName;
-		var db, notesDb, imagesDb, audiosDb;
+		var storeName = 'notes';
+		var notesDb;
 		
 		function initDb(callback) {
-			var notesRequest = indexedDB.open("notesdb", dbVersion);
-			notesRequest.onupgradeneeded = function() {
-    				var store = notesRequest.result.createObjectStore("notes",{keyPath: "id", autoIncrement: "true"}); 
+			var request = indexedDB.open(dbName, dbVersion);
+			request.onupgradeneeded = function() {
+    				var store = request.result.createObjectStore(storeName,{keyPath: "id", autoIncrement: "true"}); 
 				store.createIndex("date", "date");
  			}
-			notesRequest.onsuccess = function() {
-    				notesDb = notesRequest.result;
+			request.onsuccess = function() {
+    				notesDb = request.result;
 				callback();
  			}
-			var imagesRequest = indexedDB.open("imagesDb", dbVersion);
-			imagesRequest.onupgradeneeded = function() {
-    				var store = imagesRequest.result.createObjectStore("images",{keyPath: "id", autoIncrement: "true"}); 
-				store.createIndex("date", "date");
- 			}
-			imagesRequest.onsuccess = function() {
-    				imagesDb = imagesRequest.result;
- 			}
-			var audiosRequest = indexedDB.open("audiosDb", dbVersion);
-			audiosRequest.onupgradeneeded = function() {
-    				var store = audiosRequest.result.createObjectStore("audios",{keyPath: "id", autoIncrement: "true"}); 
-				store.createIndex("date", "date");
- 			}
-			audiosRequest.onsuccess = function() {
-    				audiosDb = audiosRequest.result;
- 			}
 		}
-		function setDbMode(mode) {
-			if(mode == "N") {
-				db = notesDb;
-				storeName = "notes";
-				dbName = "notesDb";
-			} else if(mode == "I") {
-				db = imagesDb;
-				storeName = "images";
-				dbName = "imagesDb";
-			} else if(mode == "A") {
-				db = audiosDb;
-				storeName = "audios";
-				dbName = "audiosDb";
-			}
-			getAll(loadList);
-		}
-		function add(content, date, callback) {
-			var store = db.transaction(storeName, "readwrite").objectStore(storeName);
-			var request = store.put({"content":content, "date": (date != null) ? date : new Date()});
+		function add(note, date, callback) {
+			var store = notesDb.transaction(storeName, "readwrite").objectStore(storeName);
+			var request = store.put({"note":note, "date": (date != null) ? date : new Date()});
 			request.onsuccess = function() { callback(request.result); }
 		}
-		function update(id, content, callback) {
-			var store = db.transaction(storeName, "readwrite").objectStore(storeName);
-			var request = store.put({"content":content,"date": new Date(), "id": id});
+		function update(id, note, callback) {
+			var store = notesDb.transaction(storeName, "readwrite").objectStore(storeName);
+			var request = store.put({"note":note,"date": new Date(), "id": id});
 			request.onsuccess = function() { callback(request.result); }
 		}
 		function remove(id, callback) {
-			var store = db.transaction(storeName, "readwrite").objectStore(storeName);
+			var store = notesDb.transaction(storeName, "readwrite").objectStore(storeName);
 			var request = store.delete(id);
 			request.onsuccess = function() { callback(request.result); }
 		}
 		function get(id, callback) {
-    			var store = db.transaction(storeName, "readwrite").objectStore(storeName);
+    			var store = notesDb.transaction(storeName, "readwrite").objectStore(storeName);
     			var request = store.get(id); 
     			request.onsuccess = function() { callback(request.result); } 
  		}
 		function getAll(callback) {
-        		var store = db.transaction(storeName, "readwrite").objectStore(storeName);
+        		var store = notesDb.transaction(storeName, "readwrite").objectStore(storeName);
         		var request = store.index("date").openCursor(null, "prev");
-			var items = [];
+			var notes = [];
         		request.onsuccess = function(event) {				
       				var cursor = event.target.result;
           			if (cursor) {
-                			items.push(cursor.value);
+                			notes.push(cursor.value);
                 			cursor.continue();
           			}
 				else {
-					callback(items);
+					callback(notes);
 				}
         		};   
 		}
 		function clear(callback) {
-			var store = db.transaction(storeName, "readwrite").objectStore(storeName);
+			var store = notesDb.transaction(storeName, "readwrite").objectStore(storeName);
     			var request = store.clear(); 
     			request.onsuccess = function() { callback(request.result); } 		
 		}
 		function deleteDb() {
-			db.close();
+			notesDb.close();
 			var request = indexedDB.deleteDatabase(dbName);
 			request.onsuccess = function(event) {
-  				alert("Deleted " + dbName);
+  				alert("Delete successful");
 			};
 		}
 
-		var noteId, noteText, searchMode, mode;
+		var noteId, noteText, searchMode;
 		var descLength = 100;
-		var imgHeight = 750;
-		var imgQuality = 0.8;
-		var recorder;
-		var bitRate = 32000;
-		var mimeType = "audio/webm";
 
-		window.addEventListener("DOMContentLoaded", async () => {
-			const stream = await navigator.mediaDevices.getUserMedia({ audio: true,video: false });
-			let chunks = [];
-          		recorder = new MediaRecorder(stream, { type: mimeType, bitsPerSecond: 32000});
-			recorder.addEventListener("dataavailable", event => {
-	     			if (typeof event.data === "undefined") return;
-	       			if (event.data.size === 0) return;
-	       			chunks.push(event.data);
-	     		});
-	   		recorder.addEventListener("stop", () => {
-	     			var recording = new Blob(chunks, { type: mimeType });
-				var reader = new FileReader();
-				reader.onload = function(event) {
-  					add(event.target.result, null, function(){getAll(loadList);});
-  				};
-				reader.readAsDataURL(recording);
-	     			chunks = [];
-	   		});
-		});
-
-		function initialize() {	
-			initDb(function(){ setMode("N");});
+		function initialize() {			
+			initDb(function(){getAll(loadList)});
 		}
-        	function loadItem(item) {
+        	function loadNote(data) {
 			switchMode("edit");
-			noteId = item.id;
-			noteText = item.content;
-			document.getElementById("tbNote").value = item.content;
+			noteId = data.id;
+			noteText = data.note;
+			document.getElementById("tbNote").value = data.note;
 			document.getElementById("tbNote").scrollTop = 0;
 		}
-		function filterItems(items) {
-			switchMode("list");
-			var query = document.getElementById("tbSearch").value;
-			if (query == "") { 
-				searchMode = "";
-				document.getElementById("spnSettings").style.color = "black";
-			} else { 
-				query = query.toLowerCase();
-				document.getElementById("spnSettings").style.color = "red"; 
-			}
-			var matchItems = [];
+        	function loadList(notes) {
+			switchMode();
+			var query = document.getElementById("tbSearch").value.toLowerCase();
+			var filterNotes = [];
 			var title, desc;
-			for(var i=0;i<items.length;i++){
-				if (mode == "N") {
-					title = items[i].content.split("\n")[0];
-					desc = items[i].content.substring(title.length, descLength).replace(new RegExp("\n", 'g'), " ");
-					if((searchMode != "title" && title.toLowerCase().indexOf(query) >= 0)
-						|| (searchMode != "content" && items[i].content.toLowerCase().indexOf(query) >= 0)){
-						items[i].title = title;
-						items[i].desc = desc;
-						matchItems.push(items[i]);
-					}
-				} else {
-					if((searchMode == "" || getFormattedDate(items[i].date).indexOf(query) >= 0)){
-						matchItems.push(items[i]);
-					}
+			for(var i=0;i<notes.length;i++){
+				title = notes[i].note.split("\n")[0];
+				desc = notes[i].note.substring(title.length, descLength).replace(new RegExp("\n", 'g'), " ");
+				if((searchMode != "title" || title.toLowerCase().indexOf(query) >= 0)
+					&& (searchMode != "content" || notes[i].note.toLowerCase().indexOf(query) >= 0)){
+					filterNotes.push({id: notes[i].id, note: notes[i].note, title: title, desc: desc});
 				}
 			}
-			return matchItems;
-		}
-		function loadList(items) {
-			var matchItems = filterItems(items);
-			var dvContent = document.getElementById("dvContent");
-			dvContent.innerHTML = "";
-			dvContent.scrollTop = 0;
-			for(var i=0;i<matchItems.length;i++){
-				if (mode == "N") {
-					var dvNote = document.createElement('div');
-					dvNote.className = "dvNote";
-					dvNote.id = matchItems[i].id;
-					dvNote.innerText = matchItems[i].title;
-					var dvDesc = document.createElement('div');
-					dvDesc.className = "dvDesc";
-					dvDesc.innerText = matchItems[i].desc;
-					dvNote.appendChild(dvDesc);
-					dvNote.addEventListener("click", function () {
-						get(parseInt(this.getAttribute("id")), function(item) { loadItem(item) });
-                			});
-					dvContent.appendChild(dvNote);
-				} else if (mode == "I") {
-					var dvImage = document.createElement("div");
-					dvImage.id = matchItems[i].id;
-					dvImage.innerText = "IMG_" + getFormattedDate(matchItems[i].date) + ".jpg";
-					dvImage.addEventListener("click", function () {
-						if(confirm("Delete?")) { remove(parseInt(this.getAttribute("id")), function() { getAll(loadList); }); }
-                			});				
-					var img = document.createElement("img");
-					img.src = matchItems[i].content;				
-					dvContent.appendChild(dvImage);
-					dvContent.appendChild(img);					
-				} else if (mode == "A") {
-					var dvAudio = document.createElement("div");
-					dvAudio.id = matchItems[i].id;
-					dvAudio.innerText = "AUD_" + getFormattedDate(matchItems[i].date) + ".webm";
-					dvAudio.addEventListener("click", function () {
-						if(confirm("Delete?")) { remove(parseInt(this.getAttribute("id")), function() { getAll(loadList); }); }
-                			});
-					var audio = document.createElement("audio");
-    					audio.setAttribute("src", matchItems[i].content);
-    					audio.setAttribute("controls", "controls");
-					audio.setAttribute("controlsList", "nofullscreen nodownload noremoteplayback");				
-					dvContent.appendChild(dvAudio);
-					dvContent.appendChild(audio);
-				}
+			var dvNotes = document.getElementById("dvNotes");
+			dvNotes.innerHTML = "";
+			dvNotes.scrollTop = 0;
+			for(var i=0;i<filterNotes.length;i++){
+				var dvNote = document.createElement('div');
+				dvNote.className = "dvNote";
+				dvNote.id = filterNotes[i].id;
+				dvNote.innerText = filterNotes[i].title;
+				var dvDesc = document.createElement('div');
+				dvDesc.className = "dvDesc";
+				dvDesc.innerText = filterNotes[i].desc;
+				dvNote.appendChild(dvDesc);
+				dvNote.addEventListener("click", function () {
+					get(parseInt(this.getAttribute("id")), function(note) { loadNote(note) });
+                		});
+				dvNotes.appendChild(dvNote);
 			}
         	}
-		function createItem() {
+		function createNote() {
 			var newNote = function() {
 				noteId = 0;
 				noteText = "";
@@ -288,22 +171,10 @@
 				document.getElementById("tbNote").value = "";
 				document.getElementById("tbNote").focus();
 			};
-			if (mode == "N") {
-				if(document.getElementById("dvNote").style.display == "block") {
-					saveNote(newNote);
-				} else {
-					newNote();
-				}
-			} else if (mode == "I") {
-				document.getElementById('fileImage').click();
-			} else if (mode == "A") {
-				if (recorder.state === "inactive") {
-             				recorder.start();
-             				spnAdd.style.color = "red";
-           			} else {
-             				recorder.stop();
-             				spnAdd.style.color = "black";
-           			}
+			if(document.getElementById("dvNote").style.display == "block") {
+				saveNote(newNote);
+			} else {
+				newNote();
 			}
 		}
 		function saveNote(callback) {
@@ -320,92 +191,54 @@
 				callback();
 			}
 		}
-		function saveImage() {
-			var fileReader = new FileReader();
-		      	fileReader.onload = function(e) {
-				var image = new Image();
-        			image.onload = function() {
-                			var canvas = document.createElement('canvas');
-                			var ctx = canvas.getContext('2d');
-					var w = image.width;
-					var h = image.height;
-					w = imgHeight/h*w;
-					h = imgHeight;
-					canvas.width = w;
-                			canvas.height = h;
-					ctx.drawImage(this, 0, 0, w, h);
-					add(canvas.toDataURL("image/jpeg", imgQuality), null, function(){getAll(loadList);});
-            			};
-        			image.src = e.target.result;
-				document.getElementById("fileImage").value = "";
-			};
-			setTimeout(function(){fileReader.readAsDataURL(document.getElementById("fileImage").files[0], "UTF-8");}, 1);
-		}
-		function searchItems(isFullText) {
-			searchMode = isFullText ? "content" : "title";
-			if(mode == "N" && document.getElementById("dvNote").style.display == "block") {
+		function searchNotes(isFullText) {
+			if (document.getElementById("tbSearch").value != "") {
+	            		searchMode = isFullText ? "content" : "title";
+			}
+			else {
+				searchMode = "";
+			}
+			if(document.getElementById("dvNote").style.display == "block") {
 				saveNote(function() { getAll(loadList); });
 			} else {
 				getAll(loadList);
 			}
 		}
-		function exportItems() {
+		function exportNotes() {
 			var data = document.getElementById("tbNote").value;
 			var title = data.split("\n")[0]
-			if (mode == "N" && title != "" && confirm("Export - " + title + "?")) {
+			if (title != "" && confirm("Export - " + title + "?")) {
 				exportToFile(title, data);
 			} 
 			else if (confirm("Export all?")) {
-				getAll(function(items) {
-					exportToFile("backup_" + storeName + "_" + getFormattedDate(), JSON.stringify(items));
+				getAll(function(notes) {
+					exportToFile("notesBackup_" + getFormattedDate(), JSON.stringify(notes));
 				});
 			}
 		}
-		function importItems() {
+		function importNotes() {
 			document.getElementById('fileImport').click();
 		}
-		function clearItems() {
-			if(confirm("Clear " + storeName + "?")) {
+		function clearNotes() {
+			if(confirm("Clear?")) {
 				clear(function() { getAll(loadList); });
 			}
-		}
-		function downloadItems() {
-			getAll(function(items) {
-				for(var i=0;i<items.length;i++) {
-					var a = document.createElement("a");
-					if (mode == "N") {
-						a.download = items[i].content.split("\n")[0] + getFormattedDate(items[i].date) + ".txt";
-      						a.href = window.URL.createObjectURL(new Blob([items[i].content], { type: "text/plain" }));
-					} else if (mode == "I") {
-						a.download = "IMG_" + getFormattedDate(items[i].date) + ".jpg";
-      						a.href = items[i].content;
-					} else if (mode == "A") {					
-						a.download = "AUD_" + getFormattedDate(items[i].date) + ".webm";
-      						a.href = items[i].content;
-					}
-      					a.innerHTML = "export";
-      					a.style.display = "none";
-      					a.onclick = function (event) { document.body.removeChild(event.target); };
-      					document.body.appendChild(a);a.click();
-					delete a;
-				}
-			});
 		}
 		function importFile() {
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(event) {
-				var items = [];
-				if(mode == "N" && confirm("Import note?")) {
-          				items.push({content: event.target.result, date: new Date()});
+				var notes = [];
+				if(confirm("Import note?")) {
+          				notes.push({note: event.target.result, date: new Date()});
 				}
 				else if(confirm("Import all?")) {
-					items = JSON.parse(event.target.result);
+					notes = JSON.parse(event.target.result);
 				}
 				var addedCount = 0;
-				for(var i=0;i<items.length;i++) {
-					add(items[i].content, new Date(notes[i].date), function() { 
+				for(var i=0;i<notes.length;i++) {
+					add(notes[i].note, new Date(notes[i].date), function() { 
 						addedCount++; 
-						if(addedCount == items.length) {
+						if(addedCount == notes.length) {
 							getAll(loadList); 
 						}
 					});
@@ -417,16 +250,16 @@
 		function switchMode(mode) {
 			if(mode == "edit") {
 				document.getElementById("dvNote").style.display = "block";
-				document.getElementById("dvContent").style.display = "none";
+				document.getElementById("dvNotes").style.display = "none";
 				document.getElementById("tbSearch").value = "";
 			}
 			else {
 				document.getElementById("dvNote").style.display = "none";
-				document.getElementById("dvContent").style.display = "block";
+				document.getElementById("dvNotes").style.display = "block";
 			}
 		}
 		function showOptions() {
-			if(mode == "N" && document.getElementById("dvNote").style.display == "block") {
+			if(document.getElementById("dvNote").style.display == "block") {
 				saveNote(function(){ getAll(loadList); });
 			}
 			else if (document.getElementById("tbSearch").value != "") {
@@ -434,37 +267,11 @@
 				getAll(loadList);
 			}
 			else {
-				var option = prompt("Export/Import/Clear/Download?");
-				if (option == "e") { exportItems(); } 
-				else if (option == "i") { importItems(); }
-				else if (option == "c") { clearItems(); } 
-				else if (option == "d") { downloadItems(); } 
+				var option = prompt("Export/Import/Clear?");
+				if (option == "e") { exportNotes(); } 
+				else if (option == "i") { importNotes(); }
+				else if (option == "c") { clearNotes(); } 
 			}
-		}
-		function toggleSearch(status) {
-			if(status) {
-				document.getElementById("tbSearch").style.display = "block";
-				document.getElementById("spnOptions").style.display = "none";
-				document.getElementById("tbSearch").value = "";
-				document.getElementById("tbSearch").focus();
-			} else {
-				document.getElementById("tbSearch").style.display = "none";
-				document.getElementById("spnOptions").style.display = "block";
-			}
-		}
-		function setMode(m) {
-			mode = m;
-			document.getElementById("spnNotes").style.textDecoration = "";
-			document.getElementById("spnImages").style.textDecoration = "";
-			document.getElementById("spnAudios").style.textDecoration = "";
-			if(mode == "N") {
-				document.getElementById("spnNotes").style.textDecoration = "underline";
-			} else if(mode == "I") {
-				document.getElementById("spnImages").style.textDecoration = "underline";
-			} else if(mode == "A") {
-				document.getElementById("spnAudios").style.textDecoration = "underline";
-			}
-			setDbMode(mode);
 		}
 		function setSize() {
 			document.getElementById("tbNote").style.height = (window.innerHeight  > 600) ? "675px" : "415px";
@@ -480,8 +287,8 @@
       			a.onclick = function (event) { document.body.removeChild(event.target); };
       			if (name) { document.body.appendChild(a);a.click(); }
 		}
-		function getFormattedDate(d) {
-            		d = (d != null) ? d : new Date();
+		function getFormattedDate() {
+            		var d = new Date();
             		d = d.getFullYear()    
 				+ ('0' + (d.getMonth() + 1)).slice(-2)
                 		+ ('0' + d.getDate()).slice(-2)
@@ -493,23 +300,16 @@
     </script>
 </head>
 <body onload="initialize();" onresize="setSize();">
-	<div id="dvContent" class="dvContent">
+	<div id="dvOptions" class="dvOptions">
+		<span id="spnSettings" class="spnLabel" onclick="showOptions();">=</span>
+		<input type="search" class="tbSearch" id="tbSearch" onkeyup="searchNotes(false);" onsearch="searchNotes(true);" autocapitalize="off"/>
+		<span class="spnLabel" onclick="createNote();">+</span>
+		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
+    	</div>
+	<div id="dvNotes" class="dvNotes">
 	</div>
 	<div id="dvNote">
         	<textarea id="tbNote"></textarea>
-    	</div>
-	<div id="dvOptions" class="dvOptions">
-		<span id="spnOptions">
-			<span class="spnLabel" id="spnSettings" onclick="showOptions();">=</span>
-			<span class="spnLabel" id="spnImages" onclick="setMode('I');">i</span>
-			<span class="spnLabel" id="spnNotes" onclick="setMode('N');">n</span>
-			<span class="spnLabel" id="spnAudios" onclick="setMode('A');">a</span>
-			<span class="spnLabel" onclick="toggleSearch(true);">~</span>
-			<span class="spnLabel" id="spnAdd" onclick="createItem();">+</span>
-		</span>
-		<input type="search" class="tbSearch" id="tbSearch" onkeydown="searchItems(false);" onsearch="searchItems(true);" onblur="toggleSearch(false);" autocapitalize="off"/>
-		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
-		<input type="file" id="fileImage" accept="image/*" capture onchange="saveImage();" style="display:none;" />
     	</div>
 </body>
 </html>
