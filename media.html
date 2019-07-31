@@ -16,7 +16,7 @@
         	}
 		.dvOptions {
 			width:97%;
-			margin: 15px 0px 15px 40px;
+			margin: 15px 0px 15px 0px;
 		}
 		.dvNote {
 			margin-left:15px;
@@ -471,10 +471,10 @@
 			if (window.innerHeight  > 600) {
 				document.getElementById("tbNote").style.height = "675px";
 				document.getElementById("dvNotes").style.height = "685px";
+				toggleSearch(false);
 			} else {
 				document.getElementById("tbNote").style.height = "415px";
-				document.getElementById("dvNotes").style.height = "425px";
-				toggleSearch(false);
+				document.getElementById("dvNotes").style.height = "425px";				
 			}
 		}
 		function exportToFile(name, data) {
@@ -514,7 +514,7 @@
 			<span class="spnLabel" onclick="toggleSearch(true);">~</span>
 			<span class="spnLabel" id="spnAdd" onclick="createItem();">+</span>
 		</span>
-		<input type="search" class="tbSearch" id="tbSearch" onkeydown="searchItems(false);" onsearch="searchItems(true);" onblur="toggleSearch(false);" autocapitalize="off"/>
+		<input type="search" class="tbSearch" id="tbSearch" onkeydown="searchItems(false);" onsearch="searchItems(true);this.blur();" onblur="toggleSearch(false);" autocapitalize="off"/>
 		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
 		<input type="file" id="fileImage" accept="image/*" capture onchange="saveImage();" style="display:none;" />
     	</div>
