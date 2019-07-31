@@ -179,7 +179,7 @@
 		window.addEventListener("DOMContentLoaded", async () => {
 			const stream = await navigator.mediaDevices.getUserMedia({ audio: true,video: false });
 			let chunks = [];
-          		recorder = new MediaRecorder(stream, { type: mimeType, bitsPerSecond: 32000});
+          		recorder = new MediaRecorder(stream, { type: mimeType, bitsPerSecond: bitRate});
 			recorder.addEventListener("dataavailable", event => {
 	     			if (typeof event.data === "undefined") return;
 	       			if (event.data.size === 0) return;
