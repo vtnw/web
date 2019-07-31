@@ -56,7 +56,7 @@
 		img {
 			width:100%;
 			display:block;
-			padding-bottom:10px;
+			padding:5px 0px 10px 0px;
 		}
 		audio::-webkit-media-controls-play-button,audio::-webkit-media-controls-panel {
 			background-color:white;
@@ -242,7 +242,7 @@
 			dvContent.innerHTML = "";
 			dvContent.scrollTop = 0;
 			for(var i=0;i<matchItems.length;i++){
-				if (mode == nodeMode) {
+				if (mode == noteMode) {
 					var dvNote = document.createElement('div');
 					dvNote.className = "dvNote";
 					dvNote.id = matchItems[i].id;
@@ -376,7 +376,7 @@
 				for(var i=0;i<items.length;i++) {
 					var a = document.createElement("a");
 					if (mode == noteMode) {
-						a.download = items[i].content.split("\n")[0] + getFormattedDate(items[i].date) + ".txt";
+						a.download = items[i].content.split("\n")[0] + "_" + getFormattedDate(items[i].date) + ".txt";
       						a.href = window.URL.createObjectURL(new Blob([items[i].content], { type: "text/plain" }));
 					} else if (mode == imageMode) {
 						a.download = "IMG_" + getFormattedDate(items[i].date) + ".jpg";
@@ -405,7 +405,7 @@
 				}
 				var addedCount = 0;
 				for(var i=0;i<items.length;i++) {
-					add(items[i].content, new Date(notes[i].date), function() { 
+					add(items[i].content, new Date(items[i].date), function() { 
 						addedCount++; 
 						if(addedCount == items.length) {
 							getAll(loadList); 
