@@ -2,27 +2,24 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Camera</title>
+	<title>Picture</title>
 	<script>
 		var imgHeight = 750;
-		var imgQuality = 0.8;
-		
-		document.onclick = function () {
+		var imgQuality = 0.8;		
+		function importImage() {
 			document.getElementById("fileImage").click();
 		};
-		function downloadImage() {
-			var name = prompt("Name?");
+		function exportPicture() {
+			var name = prompt("Name?", "IMG_" + getFormattedDate() + ".jpg");
 			var a = document.createElement("a");
-			a.download = "IMG_" + getFormattedDate() + "_" + ((name) ? name : "temp") + ".jpg";
+			a.download = name;
       			a.innerHTML = "export";
       			a.href = document.getElementById("img").src;
       			a.style.display = "none";
       			a.onclick = function (event) { event.stopPropagation(); document.body.removeChild(event.target); };
-      			document.body.appendChild(a);
-			a.click();
-			delete a;
+      			if (name) { document.body.appendChild(a);a.click(); }
 		}
-		function importImage() {
+		function importFile() {
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(e) {
 				var image = new Image();
@@ -43,7 +40,7 @@
 			fileReader.readAsDataURL(document.getElementById("fileImage").files[0], "UTF-8");
 		}
 		function getFormattedDate() {
-            		d = new Date();
+            		var d = new Date();
             		d = d.getFullYear()    
 				+ ('0' + (d.getMonth() + 1)).slice(-2)
                 		+ ('0' + d.getDate()).slice(-2)
@@ -55,7 +52,12 @@
     </script>
 </head>
 <body>
-	<input type="file" id="fileImage" accept="image/*" capture onchange="importImage();" style="display:none;" />
-	<img id="img" style="width:100%;" onclick="event.stopPropagation();downloadImage();" />
+	<div id="dvOptions" class="dvOptions">
+		<span id="spnSettings" class="spnLabel" onclick="exportPicture();">=</span>
+		<span class="spnSpace"></span>
+		<span class="spnLabel" onclick="importPicture();">+</span>
+		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
+    	</div	
+	<img id="img" style="width:100%;" />
 </body>
 </html>
