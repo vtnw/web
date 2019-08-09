@@ -50,14 +50,14 @@
 
 		function loadNotes(currNote) {
 			caches.open(cacheName).then((cache) => {
-				cache.keys().then(function(keys) {console.log(ddl().length);
-					for(var i=1;i< ddl().length;i++) {console.log(ddl().length);console.log(i);
+				cache.keys().then(function(keys) {
+					for(var i=ddl().length-1;i>0;i--) {
 						ddl().remove(i);
-					}console.log(ddl().length);
+					}
 					for(var key of keys) {
 						addOption(key.url.split("/")[4]);
-					}console.log(ddl().length);
-					ddl().value = currNote ? currNote : ddl().value;console.log(ddl().length);
+					}
+					ddl().value = currNote ? currNote : ddl().value;
 	  			});
 			});
 		}
