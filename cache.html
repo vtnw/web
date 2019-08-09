@@ -64,9 +64,9 @@
 		function loadNote() {
 			if (ddl().selectedIndex > 0) {
 				caches.open(cacheName).then((cache) => {
-					var key = cachePrefix + ddl().value;
-					cache.match(key).then((response) => {
-						response.text().then((data) => {
+					var key = cachePrefix + ddl().value;console.log(key);
+					cache.match(key).then((response) => {console.log(response);
+						response.text().then((data) => {console.log(data);
 							tb().value = data;
 						});				
 					});			
@@ -101,7 +101,7 @@
 			var title = ddl().options[ddl().selectedIndex].text;
 			if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
-				caches.open(cacheName).then((cache) => {
+				caches.open(cacheName).then((cache) => {console.log(cachePrefix + title);
 					cache.put(cachePrefix + title, new Response(tb().value)).then(() => { loadNotes(title); });
 				});
 			} else if (!isNew) {
