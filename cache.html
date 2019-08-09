@@ -47,12 +47,13 @@
 	</style>
 	<script>
 		var cacheName = "notes";
+		var empty = "               ";
 
 		function loadNotes(currNote) {
 			caches.open(cacheName).then((cache) => {
 				cache.keys().then(function(keys) { 
 					ddl().innerText = null;
-					addOption("");
+					addOption(empty);
 					for(var key of keys) {
 						addOption(key.url.split("/")[4]);
 					}
@@ -101,11 +102,11 @@
 			if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
 				caches.open(cacheName).then((cache) => {
-					cache.put(title, new Response(tb().value)).then(() => { loadNotes(""); });
+					cache.put(title, new Response(tb().value)).then(() => { loadNotes(empty); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
-					cache.delete(title).then(() => { loadNotes(""); });
+					cache.delete(title).then(() => { loadNotes(empty); });
 				});
 			} else {
 				var option = prompt("Export/Import?");
@@ -129,7 +130,7 @@
 		}
     </script>
 </head>
-<body onresize="setSize();" onload="loadNotes("");">
+<body onresize="setSize();" onload="loadNotes(empty);">
 	<div id="dvOptions" class="dvOptions">
 		<span id="spnSettings" class="spnLabel" onclick="showOptions();">=</span>
 		<span class="spnSpace">
