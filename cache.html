@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Note</title>
+	<style>
+		textarea {
+            		width:97%;
+            		height:675px;
+            		border:none;
+            		outline: none;
+            		padding: 5px;
+            		font-size:16px;
+            		font-family:inherit;
+            		resize:none;
+        	}
+		.dvOptions {
+			margin: 15px 0px 15px 0px;
+		}
+		.dvNote {
+			margin-left:15px;
+			height:60px;
+		}
+		.spnLabel {
+			font-weight:bold;
+			font-size:28px;
+			padding:5px 5px 5px 5px;
+			vertical-align:bottom;
+		}
+		.spnSpace {
+			display:inline-block;
+			width:83%;
+		}
+		select {
+    			margin-bottom: 5px;
+    			outline: none;
+    			font-size: 16px;
+			border:none;
+			background: white;
+			width:100%;
+			text-align-last:center;
+			-webkit-appearance: none;
+		}
+		::-webkit-scrollbar { 
+        		display: none; 
+        	}
+	</style>
+	<script>
+		var cacheName = "notes";
+		var cachePrefix = "";
+
+		function loadNotes(currNote) {
+			caches.open(cacheName).then((cache) => {
+				cache.keys().then(function(keys) { 
+					ddl().innerText = null;
+					addOption("Notes");
+					for(var key of keys) {
+						addOption(key.url.split("/")[2]);
+					}
+					ddl().value = (currNote == null) ? "Notes" : currNote.toLowerCase();
+	  			});
+			});
+		}
+		function loadNote() {
+			if (ddl().selectedIndex > 0) {
+				caches.open(cacheName).then((cache) => {
+					var key = cachePrefix + ddl().value;
+					cache.match(key).then((response) => {
+						response.text().then((data) => {
+							tb().value = data;
+						});				
+					});			
+				});
+			} else {
+				tb().value = "";
+			}
+		}
+		function exportNote() {
+			var data = document.getElementById("tbNote").value;
+			var a = document.createElement("a");
+			var name = prompt("Name?", data.split("\n")[0] + ".txt");
+			a.download = name;
+      			a.innerHTML = "export";
+      			a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
+      			a.style.display = "none";
+      			a.onclick = function (event) { document.body.removeChild(event.target); };
+      			if (name) { document.body.appendChild(a);a.click(); }
+		}
+		function importNote() {
+			document.getElementById('fileImport').click();
+		}
+		function importFile() {
+			var fileReader = new FileReader();
+		      	fileReader.onload = function(event) {
+				document.getElementById("tbNote").value = event.target.result;				
+      			};
+			fileReader.readAsText(document.getElementById("fileImport").files[0], "UTF-8");
+		}
+		function showOptions() {
+			var isNew = (ddl().selectedIndex == 0);
+			var title = ddl().options[ddl().selectedIndex].text;
+			if (tb().value != "") {
+				title = isNew? tb().value.split("\n")[0] : title;
+				caches.open(cacheName).then((cache) => {
+					cache.put(cachePrefix + title, new Response(tb().value)).then(() => { loadNotes(title); });
+				});
+			} else if (!isNew) {
+				caches.open(cacheName).then((cache) => {
+					cache.delete(cachePrefix + title).then(() => { loadNotes(null); });
+				});
+			} else {
+				var option = prompt("Export/Import?");
+			}
+		}
+		function createNote() {
+			ddl().selectedIndex = 0;
+			tb().value = "";
+			tb().focus();
+		}
+		function ddl() { return document.getElementById("ddlNotes"); }
+		function tb() { return document.getElementById("tbNote"); }
+		function addOption(text) {
+			var opt = document.createElement('option');
+    			opt.text = text;
+    			opt.value = opt.text;
+    			ddl().appendChild(opt);
+		}
+		function setSize() {
+			document.getElementById("tbNote").style.height = (window.innerHeight  > 600) ? "675px" : "415px";
+		}
+    </script>
+</head>
+<body onresize="setSize();" onload="loadNotes(null);">
+	<div id="dvOptions" class="dvOptions">
+		<span id="spnSettings" class="spnLabel" onclick="showOptions();">=</span>
+		<span class="spnSpace">
+			<select id="ddlNotes" onchange="loadNote();"></select>
+		</span>
+		<span class="spnLabel" onclick="createNote();">+</span>
+		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
+    	</div>
+	<div id="dvNote">
+        	<textarea id="tbNote"></textarea>
+    	</div>
+</body>
+</html>
