@@ -47,7 +47,6 @@
 	</style>
 	<script>
 		var cacheName = "notes";
-		var cachePrefix = "/";
 
 		function loadNotes(currNote) {
 			caches.open(cacheName).then((cache) => {
@@ -55,8 +54,8 @@
 					ddl().innerText = null;
 					addOption("Notes");
 					for(var key of keys) {
-						console.log(key.url);
-						addOption(key.url.split("/")[2]);
+						console.log(key.url);console.log(key.url.split("/")[4]);
+						addOption(key.url.split("/")[4]);
 					}
 					ddl().value = (currNote == null) ? "Notes" : currNote.toLowerCase();
 	  			});
@@ -65,7 +64,7 @@
 		function loadNote() {
 			if (ddl().selectedIndex > 0) {
 				caches.open(cacheName).then((cache) => {
-					var key = cachePrefix + ddl().value;console.log(key);
+					var key = ddl().value;console.log(key);
 					cache.match(key).then((response) => {console.log(response);
 						response.text().then((data) => {console.log(data);
 							tb().value = data;
