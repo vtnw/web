@@ -102,11 +102,11 @@
 			if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
 				caches.open(cacheName).then((cache) => {console.log(cachePrefix + title);
-					cache.put(cachePrefix + title, new Response(tb().value)).then(() => { loadNotes(title); });
+					cache.put(title, new Response(tb().value)).then(() => { loadNotes(title); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
-					cache.delete(cachePrefix + title).then(() => { loadNotes(null); });
+					cache.delete(title).then(() => { loadNotes(null); });
 				});
 			} else {
 				var option = prompt("Export/Import?");
