@@ -52,9 +52,8 @@
 			caches.open(cacheName).then((cache) => {
 				cache.keys().then(function(keys) { 
 					ddl().innerText = null;
-					addOption(null);
+					addOption("");
 					for(var key of keys) {
-						console.log(key.url);console.log(key.url.split("/")[4]);
 						addOption(key.url.split("/")[4]);
 					}
 					ddl().value = currNote;
@@ -64,9 +63,9 @@
 		function loadNote() {
 			if (ddl().selectedIndex > 0) {
 				caches.open(cacheName).then((cache) => {
-					var key = ddl().value;console.log(key);
-					cache.match(key).then((response) => {console.log(response);
-						response.text().then((data) => {console.log(data);
+					var key = ddl().value;
+					cache.match(key).then((response) => {
+						response.text().then((data) => {
 							tb().value = data;
 						});				
 					});			
@@ -101,12 +100,12 @@
 			var title = ddl().options[ddl().selectedIndex].text;
 			if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
-				caches.open(cacheName).then((cache) => {console.log(title);
-					cache.put(title, new Response(tb().value)).then(() => { loadNotes(title); });
+				caches.open(cacheName).then((cache) => {
+					cache.put(title, new Response(tb().value)).then(() => { loadNotes(""); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
-					cache.delete(title).then(() => { loadNotes(null); });
+					cache.delete(title).then(() => { loadNotes(""); });
 				});
 			} else {
 				var option = prompt("Export/Import?");
@@ -130,7 +129,7 @@
 		}
     </script>
 </head>
-<body onresize="setSize();" onload="loadNotes(null);">
+<body onresize="setSize();" onload="loadNotes("");">
 	<div id="dvOptions" class="dvOptions">
 		<span id="spnSettings" class="spnLabel" onclick="showOptions();">=</span>
 		<span class="spnSpace">
