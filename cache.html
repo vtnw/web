@@ -44,8 +44,9 @@
 	</style>
 	<script>
 		var cacheName = "notes";
-
+		var bkpSplit = "\n<backup" + "end>\n";
 		function loadNotes(currNote) {
+			showChanges(false);
 			caches.open(cacheName).then((cache) => {
 				cache.keys().then(function(keys) {
 					for(var i=ddl().length-1;i>0;i--) {
@@ -53,13 +54,17 @@
 					}
 					keys.sort(function(a, b){return a.url.localeCompare(b.url);});
 					for(var key of keys) {
-						addOption(key.url.split("/")[4]);
+						var opt = document.createElement("option");
+			    			opt.value = key.url.substring(27);
+    						opt.innerHTML = opt.value.replace(/%20/g, " ")
+    						ddl().appendChild(opt);
 					}
-					ddl().value = currNote ? currNote : ddl().value;
+					ddl().value = currNote ? currNote.replace(/ /g, "%20") : ddl().value;
 	  			});
 			});
 		}
 		function loadNote() {
+			showChanges(false);
 			if (ddl().selectedIndex > 0) {
 				caches.open(cacheName).then((cache) => {
 					var key = ddl().value;
@@ -73,10 +78,20 @@
 				tb().value = "";
 			}
 		}
-		function exportNote() {
-			var data = document.getElementById("tbNote").value;
+		async function exportNotes(all) {
+			var name = ddl().options[ddl().selectedIndex].text;
+			var data = tb().value;
+			if (all) {
+				const cache = await caches.open(cacheName);
+				const keys = await cache.keys();
+				for(var key of keys) {
+					var text = await (await cache.match(key)).text();
+					data = (data) ? data + bkpSplit + text : text;
+				}
+				name = "notesBackup";
+			}
 			var a = document.createElement("a");
-			var name = prompt("Name?", data.split("\n")[0] + ".txt");
+			name = prompt("Name?", name + ".txt");
 			a.download = name;
       			a.innerHTML = "export";
       			a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
@@ -84,20 +99,39 @@
       			a.onclick = function (event) { document.body.removeChild(event.target); };
       			if (name) { document.body.appendChild(a);a.click(); }
 		}
-		function importNote() {
-			document.getElementById('fileImport').click();
-		}
-		function importFile() {
+		function importNotes(all) {
 			var fileReader = new FileReader();
-		      	fileReader.onload = function(event) {
-				document.getElementById("tbNote").value = event.target.result;				
+		      	fileReader.onload = async function(event) {
+				if (all) {
+					var notes = event.target.result.split(bkpSplit);
+					const cache = await caches.open(cacheName);
+					for(note of notes) {					
+						await cache.put(note.split("\n")[0], new Response(note));						
+					}
+					loadNotes(ddl().value);
+				} else {
+					tb().value = event.target.result;
+					showChanges(true);
+				}
       			};
-			fileReader.readAsText(document.getElementById("fileImport").files[0], "UTF-8");
+			fileReader.readAsText(event.target.files[0], "UTF-8");
+		}
+		function clearNotes() {
+			caches.delete(cacheName).then((cache) => {
+				alert("Cleared");
+			});
 		}
 		function showOptions() {
 			var isNew = (ddl().selectedIndex == 0);
-			var title = ddl().options[ddl().selectedIndex].text;
-			if (tb().value != "") {
+			var title = ddl().value;
+			if (spn().style.color == "") {
+				var op = prompt("Export/Import/Clear/Backup/Restore?");
+				if (op == "e") { exportNotes(false); }
+				else if (op == "i") { elm("fileImport").click(); }
+				else if (op == "c") { clearNotes();	}
+				else if (op == "b") { exportNotes(true); }
+				else if (op == "r") { elm("fileRestore").click(); }
+			} else if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
 				caches.open(cacheName).then((cache) => {
 					cache.put(title, new Response(tb().value)).then(() => { loadNotes(title); });
@@ -107,7 +141,7 @@
 					cache.delete(title).then(() => { loadNotes(); });
 				});
 			} else {
-				var option = prompt("Export/Import?");
+				loadNotes();
 			}
 		}
 		function createNote() {
@@ -115,30 +149,30 @@
 			tb().value = "";
 			tb().focus();
 		}
-		function ddl() { return document.getElementById("ddlNotes"); }
-		function tb() { return document.getElementById("tbNote"); }
-		function addOption(text) {
-			var opt = document.createElement('option');
-    			opt.text = text;
-    			opt.value = opt.text;
-    			ddl().appendChild(opt);
+		function ddl() { return elm("ddlNotes"); }
+		function tb() { return elm("tbNote"); }
+		function spn() { return elm("spnOptions"); }
+		function elm(id) { return document.getElementById(id); }
+		function showChanges(status) {
+			spn().style.color = status ? "red" : "";
 		}
 		function setSize() {
-			document.getElementById("tbNote").style.height = (window.innerHeight  > 600) ? "675px" : "415px";
+			tb().style.height = (window.innerHeight  > 600) ? "675px" : "415px";
 		}
     </script>
 </head>
 <body onresize="setSize();" onload="loadNotes();">
 	<div id="dvOptions" class="dvOptions">
-		<span id="spnSettings" class="spnLabel" onclick="showOptions();">=</span>
+		<span id="spnOptions" class="spnLabel" onclick="showOptions();">=</span>
 		<span class="spnSpace">
 			<select id="ddlNotes" onchange="loadNote();"><option>Notes</option></select>
 		</span>
 		<span class="spnLabel" onclick="createNote();">+</span>
-		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
+		<input type="file" id="fileImport" onchange="importNotes(false);" style="display:none;" />
+		<input type="file" id="fileRestore" onchange="importNotes(true);" style="display:none;" />
     	</div>
 	<div id="dvNote">
-        	<textarea id="tbNote"></textarea>
+        	<textarea id="tbNote" onfocus="showChanges(true);"></textarea>
     	</div>
 </body>
 </html>
