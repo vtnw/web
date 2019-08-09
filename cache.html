@@ -54,6 +54,7 @@
 					for(var i=ddl().length-1;i>0;i--) {
 						ddl().remove(i);
 					}
+					keys.sort(function(a, b){return a.url-b.url});
 					for(var key of keys) {
 						addOption(key.url.split("/")[4]);
 					}
