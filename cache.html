@@ -57,7 +57,7 @@
 					for(var key of keys) {
 						addOption(key.url.split("/")[4]);
 					}
-					ddl().value = (currNote.length > 0) ? currNote : ddl().value;
+					ddl().value = currNote ? currNote : ddl().value;
 	  			});
 			});
 		}
@@ -102,7 +102,7 @@
 			if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
 				caches.open(cacheName).then((cache) => {
-					cache.put(title, new Response(tb().value)).then(() => { loadNotes(); });
+					cache.put(title, new Response(tb().value)).then(() => { loadNotes(title); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
