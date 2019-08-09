@@ -55,6 +55,7 @@
 					ddl().innerText = null;
 					addOption("Notes");
 					for(var key of keys) {
+						console.log(key.url);
 						addOption(key.url.split("/")[2]);
 					}
 					ddl().value = (currNote == null) ? "Notes" : currNote.toLowerCase();
