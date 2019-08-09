@@ -57,7 +57,7 @@
 					for(var key of keys) {
 						addOption(key.url.split("/")[4]);
 					}
-					ddl().value = currNote ? currNote : ddl().value;
+					ddl().value = (currNote != null) ? currNote : ddl().value;
 	  			});
 			});
 		}
