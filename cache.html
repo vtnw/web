@@ -47,17 +47,17 @@
 	</style>
 	<script>
 		var cacheName = "notes";
-		var empty = "               ";
 
 		function loadNotes(currNote) {
 			caches.open(cacheName).then((cache) => {
 				cache.keys().then(function(keys) { 
-					ddl().innerText = null;
-					addOption(empty);
+					for(var i=1;i< ddl().length;i++) {
+						ddl().remove(i);
+					}
 					for(var key of keys) {
 						addOption(key.url.split("/")[4]);
 					}
-					ddl().value = currNote;
+					ddl().value = currNote ? currNote : ddl().value;
 	  			});
 			});
 		}
@@ -102,11 +102,11 @@
 			if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
 				caches.open(cacheName).then((cache) => {
-					cache.put(title, new Response(tb().value)).then(() => { loadNotes(empty); });
+					cache.put(title, new Response(tb().value)).then(() => { loadNotes(); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
-					cache.delete(title).then(() => { loadNotes(empty); });
+					cache.delete(title).then(() => { loadNotes(); });
 				});
 			} else {
 				var option = prompt("Export/Import?");
@@ -130,11 +130,11 @@
 		}
     </script>
 </head>
-<body onresize="setSize();" onload="loadNotes(empty);">
+<body onresize="setSize();" onload="loadNotes();">
 	<div id="dvOptions" class="dvOptions">
 		<span id="spnSettings" class="spnLabel" onclick="showOptions();">=</span>
 		<span class="spnSpace">
-			<select id="ddlNotes" onchange="loadNote();"></select>
+			<select id="ddlNotes" onchange="loadNote();"><option>Notes</option></select>
 		</span>
 		<span class="spnLabel" onclick="createNote();">+</span>
 		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
