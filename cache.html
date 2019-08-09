@@ -50,8 +50,8 @@
 
 		function loadNotes(currNote) {
 			caches.open(cacheName).then((cache) => {
-				cache.keys().then(function(keys) { 
-					for(var i=1;i< ddl().length;i++) {
+				cache.keys().then(function(keys) {
+					for(var i=1;i< ddl().options.length;i++) {
 						ddl().remove(i);
 					}
 					for(var key of keys) {
