@@ -101,7 +101,7 @@
 			var title = ddl().options[ddl().selectedIndex].text;
 			if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
-				caches.open(cacheName).then((cache) => {console.log(cachePrefix + title);
+				caches.open(cacheName).then((cache) => {console.log(title);
 					cache.put(title, new Response(tb().value)).then(() => { loadNotes(title); });
 				});
 			} else if (!isNew) {
