@@ -91,7 +91,7 @@
 					data = (data) ? data + bkpSplit + text : text;
 				}
 				var d = new Date();
-            			d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+            	d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
 				name = "notes_" + d;				
 			}
 			var a = document.createElement("a");
@@ -106,17 +106,17 @@
 		function importNotes() {
 			var fileReader = new FileReader();
 			fileReader.onload = async function(event) {
-			if (confirm("All?")) {
-				var notes = event.target.result.split(bkpSplit);
-				const cache = await caches.open(cacheName);
-				for(note of notes) {					
-					await cache.put(note.split("\n")[0], new Response(note));						
+				if (confirm("All?")) {
+					var notes = event.target.result.split(bkpSplit);
+					const cache = await caches.open(cacheName);
+					for(note of notes) {					
+						await cache.put(note.split("\n")[0], new Response(note));						
+					}
+					loadNotes(ddl().value);
+				} else {
+					tb().value = event.target.result;
+					showChanges(true);
 				}
-				loadNotes(ddl().value);
-			} else {
-				tb().value = event.target.result;
-				showChanges(true);
-			}
 			};
 			fileReader.readAsText(event.target.files[0], "UTF-8");
 		}
@@ -171,9 +171,9 @@
 		</span>
 		<span class="spnLabel" onclick="createNote();">+</span>
 		<input type="file" id="fileImport" onchange="importNotes();" style="display:none;" />
-    	</div>
+    </div>
 	<div id="dvNote">
-        	<textarea id="tbNote" onfocus="showChanges(true);"></textarea>
-    	</div>
+       	<textarea id="tbNote" onfocus="showChanges(true);"></textarea>
+    </div>
 </body>
 </html>
