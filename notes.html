@@ -45,7 +45,7 @@
 	</style>
 	<script>
 		var cacheName = "notes";
-		var bkpSplit = "\n<backup" + "end>\n";
+		var bkpEnd = "\n<backup" + "end>\n";
 		function loadNotes(currNote) {
 			showChanges(false);
 			caches.open(cacheName).then((cache) => {
@@ -88,7 +88,7 @@
 				keys.sort(function(a, b){return a.url.localeCompare(b.url);});
 				for(var key of keys) {
 					var text = await (await cache.match(key)).text();
-					data = (data) ? data + bkpSplit + text : text;
+					data = (data) ? data + bkpEnd + text : text;
 				}
 				var d = new Date();
 				d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
@@ -104,10 +104,10 @@
 			if (name) { document.body.appendChild(a);a.click(); }
 		}
 		function importNotes() {
-			var fileReader = new FileReader();
-			fileReader.onload = async function(event) {
+			var reader = new FileReader();
+			reader.onload = async function(event) {
 				if (confirm("All?")) {
-					var notes = event.target.result.split(bkpSplit);
+					var notes = event.target.result.split(bkpEnd);
 					const cache = await caches.open(cacheName);
 					for(note of notes) {					
 						await cache.put(note.split("\n")[0], new Response(note));						
@@ -118,7 +118,7 @@
 					showChanges(true);
 				}
 			};
-			fileReader.readAsText(event.target.files[0], "UTF-8");
+			reader.readAsText(event.target.files[0], "UTF-8");
 		}
 		function clearNotes() {
 			caches.delete(cacheName).then((cache) => {
