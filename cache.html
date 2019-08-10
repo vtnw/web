@@ -79,10 +79,10 @@
 				tb().value = "";
 			}
 		}
-		async function exportNotes(all) {
+		async function exportNotes() {
 			var name = ddl().options[ddl().selectedIndex].text;
 			var data = tb().value;
-			if (all) {
+			if (confirm("All?")) {
 				const cache = await caches.open(cacheName);
 				const keys = await cache.keys();
 				keys.sort(function(a, b){return a.url.localeCompare(b.url);});
@@ -103,10 +103,10 @@
       			a.onclick = function (event) { document.body.removeChild(event.target); };
       			if (name) { document.body.appendChild(a);a.click(); }
 		}
-		function importNotes(all) {
+		function importNotes() {
 			var fileReader = new FileReader();
 		      	fileReader.onload = async function(event) {
-				if (all) {
+				if (confirm("All?")) {
 					var notes = event.target.result.split(bkpSplit);
 					const cache = await caches.open(cacheName);
 					for(note of notes) {					
@@ -129,12 +129,10 @@
 			var isNew = (ddl().selectedIndex == 0);
 			var title = ddl().value;
 			if (spn().style.color == "") {
-				var op = prompt("Export/Import/Clear/Backup/Restore?");
-				if (op == "e") { exportNotes(false); }
+				var op = prompt("Export/Import/Clear?");
+				if (op == "e") { exportNotes(); }
 				else if (op == "i") { elm("fileImport").click(); }
-				else if (op == "c") { clearNotes();	}
-				else if (op == "b") { exportNotes(true); }
-				else if (op == "r") { elm("fileRestore").click(); }
+				else if (op == "c") { clearNotes(); }
 			} else if (tb().value != "") {
 				title = isNew? tb().value.split("\n")[0] : title;
 				caches.open(cacheName).then((cache) => {
@@ -172,8 +170,7 @@
 			<select id="ddlNotes" onchange="loadNote();"><option>Notes</option></select>
 		</span>
 		<span class="spnLabel" onclick="createNote();">+</span>
-		<input type="file" id="fileImport" onchange="importNotes(false);" style="display:none;" />
-		<input type="file" id="fileRestore" onchange="importNotes(true);" style="display:none;" />
+		<input type="file" id="fileImport" onchange="importNotes();" style="display:none;" />
     	</div>
 	<div id="dvNote">
         	<textarea id="tbNote" onfocus="showChanges(true);"></textarea>
