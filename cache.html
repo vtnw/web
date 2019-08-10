@@ -84,11 +84,14 @@
 			if (all) {
 				const cache = await caches.open(cacheName);
 				const keys = await cache.keys();
+				keys.sort(function(a, b){return a.url.localeCompare(b.url);});
 				for(var key of keys) {
 					var text = await (await cache.match(key)).text();
 					data = (data) ? data + bkpSplit + text : text;
 				}
-				name = "notesBackup";
+				var d = new Date();
+            			d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+				name = "notes_" + d;				
 			}
 			var a = document.createElement("a");
 			name = prompt("Name?", name + ".txt");
