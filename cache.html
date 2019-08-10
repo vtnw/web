@@ -5,15 +5,15 @@
 	<title>Notes</title>
 	<style>
 		textarea {
-            		width:97%;
-            		height:675px;
-            		border:none;
-            		outline: none;
-            		padding: 5px;
-            		font-size:16px;
-            		font-family:inherit;
-            		resize:none;
-        	}
+        	width:97%;
+            height:675px;
+            border:none;
+            outline: none;
+            padding: 5px;
+            font-size:16px;
+            font-family:inherit;
+            resize:none;
+        }
 		.dvOptions {
 			margin: 15px 0px 15px 0px;
 		}
@@ -28,10 +28,10 @@
 			width:83%;
 		}
 		select {
-    			margin-bottom: 10px;
-    			outline: none;
-    			font-size: 16px;			
-            		font-family:inherit;
+    		margin-bottom: 10px;
+    		outline: none;
+    		font-size: 16px;			
+            font-family:inherit;
 			border:none;
 			background: white;
 			width:100%;
@@ -40,8 +40,8 @@
 			font-weight:bold;
 		}
 		::-webkit-scrollbar { 
-        		display: none; 
-        	}
+        	display: none; 
+        }
 	</style>
 	<script>
 		var cacheName = "notes";
@@ -97,27 +97,27 @@
 			var a = document.createElement("a");
 			name = prompt("Name?", name + ".txt");
 			a.download = name;
-      			a.innerHTML = "export";
-      			a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
-      			a.style.display = "none";
-      			a.onclick = function (event) { document.body.removeChild(event.target); };
-      			if (name) { document.body.appendChild(a);a.click(); }
+      		a.innerHTML = "export";
+      		a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
+      		a.style.display = "none";
+      		a.onclick = function (event) { document.body.removeChild(event.target); };
+      		if (name) { document.body.appendChild(a);a.click(); }
 		}
 		function importNotes() {
 			var fileReader = new FileReader();
-		      	fileReader.onload = async function(event) {
-				if (confirm("All?")) {
-					var notes = event.target.result.split(bkpSplit);
-					const cache = await caches.open(cacheName);
-					for(note of notes) {					
-						await cache.put(note.split("\n")[0], new Response(note));						
-					}
-					loadNotes(ddl().value);
-				} else {
-					tb().value = event.target.result;
-					showChanges(true);
+			fileReader.onload = async function(event) {
+			if (confirm("All?")) {
+				var notes = event.target.result.split(bkpSplit);
+				const cache = await caches.open(cacheName);
+				for(note of notes) {					
+					await cache.put(note.split("\n")[0], new Response(note));						
 				}
-      			};
+				loadNotes(ddl().value);
+			} else {
+				tb().value = event.target.result;
+				showChanges(true);
+			}
+			};
 			fileReader.readAsText(event.target.files[0], "UTF-8");
 		}
 		function clearNotes() {
