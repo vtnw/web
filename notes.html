@@ -75,7 +75,7 @@
 					keys.reverse();
 					for(var key of keys) {
 						var dv = document.createElement("div");
-						dv.id = key.url.substring(27-19, key.url.length-1);
+						dv.id = key.url.substring(27);
 						dv.className = "dvNote";
 						dv.innerText = dv.id.replace(/%20/g, " ");
 						dv.addEventListener("click", function () {
@@ -95,7 +95,7 @@
 			tb().value = "";
 			ttl().innerText = key.replace(/%20/g, " ");
 			caches.open(cacheName).then((cache) => {
-				cache.match("https://" + key).then((response) => {
+				cache.match(key).then((response) => {
 					response.text().then((data) => {
 						tb().value = data;
 					});				
@@ -134,7 +134,7 @@
 					var notes = event.target.result.split(bkpEnd);
 					const cache = await caches.open(cacheName);
 					for(note of notes) {					
-						await cache.put("https://" + note.split("\n")[0], new Response(note));						
+						await cache.put(note.split("\n")[0], new Response(note));						
 					}
 					loadNotes();
 				} else {
@@ -161,11 +161,11 @@
 			} else if (tb().value != "") {
 				key = (isNew)? tb().value.split("\n")[0] : key;
 				caches.open(cacheName).then((cache) => {
-					cache.put("https://" + key, new Response(tb().value)).then(() => { loadNote(key); });
+					cache.put(key, new Response(tb().value)).then(() => { loadNote(key); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
-					cache.delete("https://" + key).then(() => { loadNotes(); });
+					cache.delete(key).then(() => { loadNotes(); });
 				});
 			} else {
 				loadNotes();
