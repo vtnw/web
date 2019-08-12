@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -66,36 +67,36 @@
 		var maxHeight = "675px";
 		var minHeight = "415px";
 		//Open issues: case search, slash, pipe chars in title
-		async function loadNotes(query) {
+		function loadNotes(query) {
 			showChanges(false);
-			const cache = await caches.open(cacheName);
-			const keys = await cache.keys();
-			keys.reverse();
-			list().innerText = "";
-			for(var key of keys) {
-				var data = await (await cache.match(key)).text();
-				var dv = document.createElement("div");
-				dv.id = key.url.substring(27);
-				dv.className = "dvNote";
-				dv.innerText = data.replace(/\n/g, " ");
-				dv.addEventListener("click", function () {
-					loadNote(this.getAttribute("id"));
+			caches.open(cacheName).then((cache) => {
+				cache.keys().then(function(keys) {
+					list().innerText = "";
+					keys.reverse();
+					for(var key of keys) {
+						var dv = document.createElement("div");
+						dv.id = key.url.substring(27-19, key.url.length-1);
+						dv.className = "dvNote";
+						dv.innerText = dv.id.replace(/%20/g, " ");
+						dv.addEventListener("click", function () {
+							loadNote(this.getAttribute("id"));
+						});
+						if(!query || dv.innerText.toLowerCase().indexOf(query) >= 0) {
+							list().appendChild(dv);
+						}
+					}
+					showNote(false);
+					ttl().innerText = title;
 				});
-				if(!query || dv.innerText.toLowerCase().indexOf(query) >= 0) {
-					list().appendChild(dv);
-				}
-			}
-			showNote(false);
-			ttl().innerText = title;
+			});
 		}
 		function loadNote(key) {
 			showChanges(false);
 			tb().value = "";
-			tb().dataset.key = key;
+			ttl().innerText = key.replace(/%20/g, " ");
 			caches.open(cacheName).then((cache) => {
-				cache.match(key).then((response) => {
+				cache.match("https://" + key).then((response) => {
 					response.text().then((data) => {
-						ttl().innerText = name(data);
 						tb().value = data;
 					});				
 				});			
@@ -133,7 +134,7 @@
 					var notes = event.target.result.split(bkpEnd);
 					const cache = await caches.open(cacheName);
 					for(note of notes) {					
-						await cache.put("https://" + cacheName + new Date().getTime(), new Response(note));						
+						await cache.put("https://" + note.split("\n")[0], new Response(note));						
 					}
 					loadNotes();
 				} else {
@@ -149,7 +150,8 @@
 			});
 		}
 		function showOptions() {
-			var key = tb().dataset.key;
+			var key = ttl().innerText;
+			var isNew = (key == title);
 			if (list().style.display == "block") {
 				var op = prompt("Export/Import/Clear?");
 				if (op == "e") { exportNotes(); }
@@ -157,13 +159,13 @@
 				else if (op == "c") { clearNotes(); }
 				else if (op == "x") { maxHeight = prompt("max height?"); minHeight = prompt("min height?"); setSize(); }
 			} else if (tb().value != "") {
-				key = (key)? key : cacheName + new Date().getTime();
+				key = (isNew)? tb().value.split("\n")[0] : key;
 				caches.open(cacheName).then((cache) => {
-					cache.put(key, new Response(tb().value)).then(() => { loadNote(key); });
+					cache.put("https://" + key, new Response(tb().value)).then(() => { loadNote(key); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
-					cache.delete(key).then(() => { loadNotes(); });
+					cache.delete("https://" + key).then(() => { loadNotes(); });
 				});
 			} else {
 				loadNotes();
@@ -173,7 +175,6 @@
 			ttl().innerText = title;
 			showNote(true);
 			tb().value = "";
-			tb().dataset.key = "";
 			tb().focus();
 		}
 		function list() { return elm("dvNotes"); }
@@ -181,7 +182,6 @@
 		function spn() { return elm("spnOptions"); }
 		function ttl() { return elm("spnTitle"); }
 		function elm(id) { return document.getElementById(id); }
-		function name(n) { return n.split("\n")[0].replace(/%20/g, " "); }
 		function showChanges(status) {
 			spn().style.color = status ? "red" : "";
 		}
