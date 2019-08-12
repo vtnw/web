@@ -60,13 +60,13 @@
 						list().appendChild(dv);
 					}
 					showNote(false);
-					title().innerText = title;
+					ttl().innerText = title;
 				});
 			});
 		}
 		function loadNote(key) {
 			showChanges(false);
-			title().innerText = key.replace(/%20/g, " ");
+			ttl().innerText = key.replace(/%20/g, " ");
 			caches.open(cacheName).then((cache) => {
 				cache.match(key).then((response) => {
 					response.text().then((data) => {
@@ -123,7 +123,7 @@
 			});
 		}
 		function showOptions() {
-			var key = title().innerText;
+			var key = ttl().innerText;
 			var isNew = (key == title);
 			if (list().style.display == "block") {
 				var op = prompt("Export/Import/Clear?");
@@ -144,7 +144,7 @@
 			}
 		}
 		function createNote() {
-			title().innerText = title;
+			ttl().innerText = title;
 			showNote(true);
 			tb().value = "";
 			tb().focus();
@@ -152,7 +152,7 @@
 		function list() { return elm("dvNotes"); }
 		function tb() { return elm("tbNote"); }
 		function spn() { return elm("spnOptions"); }
-		function title() { return elm("spnTitle"); }
+		function ttl() { return elm("spnTitle"); }
 		function elm(id) { return document.getElementById(id); }
 		function showChanges(status) {
 			spn().style.color = status ? "red" : "";
