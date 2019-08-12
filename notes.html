@@ -158,8 +158,8 @@
 			spn().style.color = status ? "red" : "";
 		}
 		function showNote(status) {
-			list().style.display = toggle ? "none" : "block";
-			tb().style.display = toggle ? "block" : "none";
+			list().style.display = status ? "none" : "block";
+			tb().style.display = status ? "block" : "none";
 		}
 		function setSize() {
 			tb().style.height = (window.innerHeight > 600) ? "675px" : "415px";
