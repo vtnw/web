@@ -23,7 +23,7 @@
 			padding:5px 5px 5px 5px;
 			vertical-align:bottom;
 		}
-		.spnSpace {
+		#spnTitle {
 			display:inline-block;
 			width:83%;
 		}
@@ -45,39 +45,36 @@
 	</style>
 	<script>
 		var cacheName = "notes";
+		var title = "Notes";
 		var bkpEnd = "\n<backup" + "end>\n";
 		function loadNotes(currNote) {
 			showChanges(false);
 			caches.open(cacheName).then((cache) => {
 				cache.keys().then(function(keys) {
-					for(var i=ddl().length-1;i>0;i--) {
-						ddl().remove(i);
-					}
+					dv().innerText = "";
 					keys.sort(function(a, b){return a.url.localeCompare(b.url);});
 					for(var key of keys) {
-						var opt = document.createElement("option");
-						opt.value = key.url.substring(27);
-						opt.innerHTML = opt.value.replace(/%20/g, " ")
-						ddl().appendChild(opt);
+						var dv = document.createElement("dv");
+						dv.id = key.url.substring(27);
+						dv.innerText = dv.id.replace(/%20/g, " ")
+						dv().appendChild(dv);
 					}
-					ddl().value = currNote ? currNote.replace(/ /g, "%20") : ddl().value;
+					showNote(false);
+					title().innerText = title;
 				});
 			});
 		}
-		function loadNote() {
+		function loadNote(key) {
 			showChanges(false);
-			if (ddl().selectedIndex > 0) {
-				caches.open(cacheName).then((cache) => {
-					var key = ddl().value;
-					cache.match(key).then((response) => {
-						response.text().then((data) => {
-							tb().value = data;
-						});				
-					});			
-				});
-			} else {
-				tb().value = "";
-			}
+			title().innerText = key.replace(/%20/g, " ");
+			caches.open(cacheName).then((cache) => {
+				cache.match(key).then((response) => {
+					response.text().then((data) => {
+						tb().value = data;
+					});				
+				});			
+			});
+			showNote(true);
 		}
 		async function exportNotes() {
 			var name = ddl().options[ddl().selectedIndex].text;
@@ -126,17 +123,17 @@
 			});
 		}
 		function showOptions() {
-			var isNew = (ddl().selectedIndex == 0);
-			var title = ddl().value;
-			if (spn().style.color == "") {
+			var key = title().innerText;
+			var isNew = (key == title);
+			if (dv().style.display == "block") {
 				var op = prompt("Export/Import/Clear?");
 				if (op == "e") { exportNotes(); }
 				else if (op == "i") { elm("fileImport").click(); }
 				else if (op == "c") { clearNotes(); }
 			} else if (tb().value != "") {
-				title = isNew? tb().value.split("\n")[0] : title;
+				key = (isNew)? tb().value.split("\n")[0] : key;
 				caches.open(cacheName).then((cache) => {
-					cache.put(title, new Response(tb().value)).then(() => { loadNotes(title); });
+					cache.put(key, new Response(tb().value)).then(() => { loadNote(key); });
 				});
 			} else if (!isNew) {
 				caches.open(cacheName).then((cache) => {
@@ -147,16 +144,22 @@
 			}
 		}
 		function createNote() {
-			ddl().selectedIndex = 0;
+			title().innerText = title;
+			showNote(true);
 			tb().value = "";
 			tb().focus();
 		}
-		function ddl() { return elm("ddlNotes"); }
+		function dv() { return elm("dvNotes"); }
 		function tb() { return elm("tbNote"); }
 		function spn() { return elm("spnOptions"); }
+		function title() { return elm("spnTitle"); }
 		function elm(id) { return document.getElementById(id); }
 		function showChanges(status) {
 			spn().style.color = status ? "red" : "";
+		}
+		function showNote(status) {
+			dv().style.display = toggle ? "none" : "block";
+			tb().style.display = toggle ? "block" : "none";
 		}
 		function setSize() {
 			tb().style.height = (window.innerHeight > 600) ? "675px" : "415px";
@@ -166,12 +169,11 @@
 <body onresize="setSize();" onload="loadNotes();">
 	<div class="dvOptions">
 		<span id="spnOptions" class="spnLabel" onclick="showOptions();">=</span>
-		<span class="spnSpace">
-			<select id="ddlNotes" onchange="loadNote();"><option>Notes</option></select>
-		</span>
+		<span id="spnTitle">Notes</span>
 		<span class="spnLabel" onclick="createNote();">+</span>
 		<input type="file" id="fileImport" onchange="importNotes();" style="display:none;" />
 	</div>
+	<div id="dvNotes"></div>
 	<div>
 		<textarea id="tbNote" onfocus="showChanges(true);"></textarea>
 	</div>
