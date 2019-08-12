@@ -77,9 +77,21 @@
 				var dv = document.createElement("div");
 				dv.id = key.url.substring(27);
 				dv.className = "dvNote";
-				dv.innerText = name(data);
+				dv.innerText = data;
 				dv.addEventListener("click", function () {
-					loadNote(this.getAttribute("id"));
+					var key = this.getAttribute("id");
+					showChanges(false);
+					tb().value = "";
+					tb().dataset.key = key;
+					caches.open(cacheName).then((cache) => {
+						cache.match(key).then((response) => {
+							response.text().then((data) => {
+								ttl().innerText = name(data);
+								tb().value = data;
+							});				
+						});			
+					});
+					showNote(true);
 				});
 				if(!query || dv.innerText.toLowerCase().indexOf(query) >= 0) {
 					list().appendChild(dv);
@@ -87,20 +99,6 @@
 			}
 			showNote(false);
 			ttl().innerText = title;
-		}
-		function loadNote(key) {
-			showChanges(false);
-			tb().value = "";
-			tb().dataset.key = key;
-			caches.open(cacheName).then((cache) => {
-				cache.match(key).then((response) => {
-					response.text().then((data) => {
-						ttl().innerText = name(data);
-						tb().value = data;
-					});				
-				});			
-			});
-			showNote(true);
 		}
 		async function exportNotes() {
 			var name = ttl().innerText;
