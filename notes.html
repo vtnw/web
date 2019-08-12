@@ -80,9 +80,9 @@
 			showNote(true);
 		}
 		async function exportNotes() {
-			var name = ddl().options[ddl().selectedIndex].text;
+			var name = ttl().innerText;
 			var data = tb().value;
-			if (confirm("All?")) {
+			if (name == title) {
 				const cache = await caches.open(cacheName);
 				const keys = await cache.keys();
 				keys.sort(function(a, b){return a.url.localeCompare(b.url);});
@@ -106,7 +106,7 @@
 		function importNotes() {
 			var reader = new FileReader();
 			reader.onload = async function(event) {
-				if (confirm("All?")) {
+				if (ttl().innerText = title) {
 					var notes = event.target.result.split(bkpEnd);
 					const cache = await caches.open(cacheName);
 					for(note of notes) {					
