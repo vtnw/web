@@ -51,13 +51,13 @@
 			showChanges(false);
 			caches.open(cacheName).then((cache) => {
 				cache.keys().then(function(keys) {
-					dv().innerText = "";
+					list().innerText = "";
 					keys.sort(function(a, b){return a.url.localeCompare(b.url);});
 					for(var key of keys) {
 						var dv = document.createElement("dv");
 						dv.id = key.url.substring(27);
 						dv.innerText = dv.id.replace(/%20/g, " ")
-						dv().appendChild(dv);
+						list().appendChild(dv);
 					}
 					showNote(false);
 					title().innerText = title;
@@ -125,7 +125,7 @@
 		function showOptions() {
 			var key = title().innerText;
 			var isNew = (key == title);
-			if (dv().style.display == "block") {
+			if (list().style.display == "block") {
 				var op = prompt("Export/Import/Clear?");
 				if (op == "e") { exportNotes(); }
 				else if (op == "i") { elm("fileImport").click(); }
@@ -149,7 +149,7 @@
 			tb().value = "";
 			tb().focus();
 		}
-		function dv() { return elm("dvNotes"); }
+		function list() { return elm("dvNotes"); }
 		function tb() { return elm("tbNote"); }
 		function spn() { return elm("spnOptions"); }
 		function title() { return elm("spnTitle"); }
@@ -158,7 +158,7 @@
 			spn().style.color = status ? "red" : "";
 		}
 		function showNote(status) {
-			dv().style.display = toggle ? "none" : "block";
+			list().style.display = toggle ? "none" : "block";
 			tb().style.display = toggle ? "block" : "none";
 		}
 		function setSize() {
