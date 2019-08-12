@@ -100,6 +100,20 @@
 			showNote(false);
 			ttl().innerText = title;
 		}
+		function loadNote(key) {
+			showChanges(false);
+			tb().value = "";
+			tb().dataset.key = key;
+			caches.open(cacheName).then((cache) => {
+				cache.match(key).then((response) => {
+					response.text().then((data) => {
+						ttl().innerText = name(data);
+						tb().value = data;
+					});				
+				});			
+			});
+			showNote(true);
+		}
 		async function exportNotes() {
 			var name = ttl().innerText;
 			var data = tb().value;
