@@ -53,7 +53,7 @@
 						var dv = document.createElement("div");
 						dv.id = key.url.substring(27);
 						dv.innerText = dv.id.replace(/%20/g, " ");
-						dv.ddEventListener("click", function () {
+						dv.addEventListener("click", function () {
 							loadNote(this.getAttribute("id"));
 						});
 						list().appendChild(dv);
