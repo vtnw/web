@@ -77,21 +77,9 @@
 				var dv = document.createElement("div");
 				dv.id = key.url.substring(27);
 				dv.className = "dvNote";
-				dv.innerText = data;
+				dv.innerText = data.replace(/\n/g, " ");
 				dv.addEventListener("click", function () {
-					var key = this.getAttribute("id");
-					showChanges(false);
-					tb().value = "";
-					tb().dataset.key = key;
-					caches.open(cacheName).then((cache) => {
-						cache.match(key).then((response) => {
-							response.text().then((data) => {
-								ttl().innerText = name(data);
-								tb().value = data;
-							});				
-						});			
-					});
-					showNote(true);
+					loadNote(this.getAttribute("id"));
 				});
 				if(!query || dv.innerText.toLowerCase().indexOf(query) >= 0) {
 					list().appendChild(dv);
