@@ -57,7 +57,7 @@
 							loadNote(this.getAttribute("id"));
 						});
 						list().appendChild(dv);
-						list().appendChild("<br/>");
+						list().appendChild(document.createElement("br"));
 					}
 					showNote(false);
 					ttl().innerText = title;
