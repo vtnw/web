@@ -80,7 +80,11 @@
 					tb().value = e.target.result;
 				}
 			};
-			fileReader.readAsDataURL(fl().files[0], "UTF-8");
+			if(fl().files[0].type == "image/jpeg") {
+				fileReader.readAsDataURL(fl().files[0], "UTF-8");
+			} else {
+				fileReader.readAsText(fl().files[0], "UTF-8");
+			}
 		}
 		function setSize() {
 			tb().style.height = (window.innerHeight  > 600) ? "685px" : "425px";
