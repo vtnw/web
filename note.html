@@ -98,9 +98,10 @@
 				+ ('0' + d.getMinutes()).slice(-2)
 				+ ('0' + d.getSeconds()).slice(-2);
 		}
-		function tb() { return document.getElementById("tbNote"); }
-		function fl() { return document.getElementById("fileImport"); }
-		function im() { return document.getElementById("img"); }
+		function tb() { return elm("tbNote"); }
+		function fl() { return elm("fileImport"); }
+		function im() { return elm("img"); }
+		function elm(id) { return document.getElementById(id); }
     </script>
 </head>
 <body onresize="setSize();">
