@@ -55,7 +55,7 @@
 		function importFile() {
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(e) {
-				if(fl().files[0].type == "image/jpeg") {
+				if(isImg()) {
 					tb().style.display = "none";
 					im().style.display = "block";
 					tb().value = "";
@@ -80,7 +80,7 @@
 					tb().value = e.target.result;
 				}
 			};
-			if(fl().files[0].type == "image/jpeg") {
+			if(fl().files.length > 0 && isImg()) {
 				fileReader.readAsDataURL(fl().files[0], "UTF-8");
 			} else {
 				fileReader.readAsText(fl().files[0], "UTF-8");
@@ -102,6 +102,8 @@
 		function fl() { return elm("fileImport"); }
 		function im() { return elm("img"); }
 		function elm(id) { return document.getElementById(id); }
+		function isImg() { return fl().files[0].type == "image/jpeg"; }
+		
     </script>
 </head>
 <body onresize="setSize();">
