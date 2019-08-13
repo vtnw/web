@@ -13,7 +13,7 @@
 			font-size:16px;
 			font-family:inherit;
 			resize:none;
-        	}
+		}
 		.dvOptions {
 			margin: 10px 0px 10px 0px;
 		}
@@ -31,20 +31,27 @@
 			width:83%;
 		}
 		::-webkit-scrollbar { 
-        		display: none; 
+			display: none;
 		}
 	</style>
 	<script>
 		function exportFile() {
 			var a = document.createElement("a");
+			var d = new Date();
+			d = d.getFullYear()
+				+ ('0' + (d.getMonth() + 1)).slice(-2)
+				+ ('0' + d.getDate()).slice(-2)
+				+ ('0' + d.getHours()).slice(-2)
+				+ ('0' + d.getMinutes()).slice(-2)
+				+ ('0' + d.getSeconds()).slice(-2);
 			if(tb().value != "") {
-				a.download = "note_" + dateStamp() + ".txt";
-      				a.href = window.URL.createObjectURL(new Blob([tb().value], { type: "text/plain" }));
+				a.download = "note_" + d + ".txt";
+				a.href = window.URL.createObjectURL(new Blob([tb().value], { type: "text/plain" }));
 			} else {
-				a.download = "IMG_" + dateStamp() + ".jpg";
+				a.download = "IMG_" + d + ".jpg";
 				a.href = im().src;
 			}
-			a.innerHTML = "export";      			
+			a.innerHTML = "export";
 			a.style.display = "none";
 			a.onclick = function (e) { document.body.removeChild(e.target); };
 			document.body.appendChild(a);
@@ -52,7 +59,7 @@
 		}
 		function importFile() {
 			var fileReader = new FileReader();
-		      	fileReader.onload = function(e) {
+			fileReader.onload = function(e) {
 				if(isImg()) {
 					tb().value = "";
 					var image = new Image();
@@ -83,24 +90,13 @@
 				fileReader.readAsText(fl().files[0], "UTF-8");
 			}
 		}
-		function setSize() {
-			tb().style.height = (window.innerHeight  > 600) ? "685px" : "425px";
-		}
-		function dateStamp() {
-			var d = new Date();
-			return d.getFullYear()    
-				+ ('0' + (d.getMonth() + 1)).slice(-2)
-				+ ('0' + d.getDate()).slice(-2)
-				+ ('0' + d.getHours()).slice(-2)
-				+ ('0' + d.getMinutes()).slice(-2)
-				+ ('0' + d.getSeconds()).slice(-2);
-		}
+		function setSize() { tb().style.height = (window.innerHeight > 600) ? "685px" : "425px"; }
 		function tb() { return elm("tbNote"); }
 		function fl() { return elm("fileImport"); }
 		function im() { return elm("img"); }
 		function elm(id) { return document.getElementById(id); }
-		function isImg() { return fl().files[0].type == "image/jpeg"; }		
-    </script>
+		function isImg() { return fl().files[0].type == "image/jpeg"; }
+	</script>
 </head>
 <body onresize="setSize();">
 	<div class="dvOptions">
