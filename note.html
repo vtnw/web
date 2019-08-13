@@ -54,8 +54,6 @@
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(e) {
 				if(isImg()) {
-					tb().style.display = "none";
-					im().style.display = "block";
 					tb().value = "";
 					var image = new Image();
 					image.onload = function() {
@@ -73,10 +71,10 @@
 					image.src = e.target.result;
 				} else {
 					im().src = "";
-					im().style.display = "none";
-					tb().style.display = "block";
 					tb().value = e.target.result;
 				}
+				tb().style.display = isImg() ? "none" : "block";
+				im().style.display = isImg() ? "block" : "none";
 				fl().value = "";
 			};
 			if(isImg()) {
