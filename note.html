@@ -35,8 +35,6 @@
 		}
 	</style>
 	<script>
-		var imgHeight = 750;
-		var imgQuality = 0.8;
 		function exportFile() {
 			var a = document.createElement("a");
 			if(tb().value != "") {
@@ -65,12 +63,12 @@
 						var ctx = cvs.getContext("2d");
 						var w = image.width;
 						var h = image.height;
-						w = imgHeight/h*w;
-						h = imgHeight;
+						w = 750/h*w;
+						h = 750;
 						cvs.width = w;
 						cvs.height = h;
 						ctx.drawImage(this, 0, 0, w, h);
-						im().src = cvs.toDataURL("image/jpeg", imgQuality);
+						im().src = cvs.toDataURL("image/jpeg", 0.8);
 					};
 					image.src = e.target.result;
 				} else {
@@ -103,8 +101,7 @@
 		function fl() { return elm("fileImport"); }
 		function im() { return elm("img"); }
 		function elm(id) { return document.getElementById(id); }
-		function isImg() { return fl().files[0].type == "image/jpeg"; }
-		
+		function isImg() { return fl().files[0].type == "image/jpeg"; }		
     </script>
 </head>
 <body onresize="setSize();">
