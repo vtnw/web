@@ -37,7 +37,6 @@
 	<script>
 		var imgHeight = 750;
 		var imgQuality = 0.8;
-		var imgType = "image/jpeg";
 		function exportPicture() {
 			var a = document.createElement("a");
 			if(tb().value != "") {
@@ -56,7 +55,7 @@
 		function importFile() {
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(e) {
-				if(fl().files[0].type == imgType) {
+				if(fl().files[0].type == "image/jpeg") {
 					tb().style.display = "none";
 					im().style.display = "block";
 					tb().value = "";
@@ -71,7 +70,7 @@
 						cvs.width = w;
 						cvs.height = h;
 						ctx.drawImage(this, 0, 0, w, h);
-						im().src = cvs.toDataURL(imgType, imgQuality);
+						im().src = cvs.toDataURL("image/jpeg", imgQuality);
 					};
 					image.src = e.target.result;
 				} else {
@@ -84,7 +83,7 @@
 			fileReader.readAsDataURL(fl().files[0], "UTF-8");
 		}
 		function setSize() {
-			tb().style.height = (window.innerHeight  > 600) ? "675px" : "415px";alert(tb().style.height);
+			tb().style.height = (window.innerHeight  > 600) ? "675px" : "415px";
 		}
 		function dateStamp() {
 			var d = new Date();
