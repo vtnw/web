@@ -5,15 +5,15 @@
 	<title>Notes</title>
 	<style>
 		textarea {
-            		width:97%;
-            		height:675px;
-            		border:none;
-            		outline: none;
-            		padding: 5px;
-            		font-size:16px;
-            		font-family:inherit;
-            		resize:none;
-        	}
+			width:97%;
+			height:675px;
+			border:none;
+			outline: none;
+			padding: 5px;
+			font-size:16px;
+			font-family:inherit;
+			resize:none;
+        }
 		.dvOptions {
 			margin: 10px 0px 10px 0px;
 		}
@@ -32,11 +32,12 @@
 		}
 		::-webkit-scrollbar { 
         		display: none; 
-        	}
+		}
 	</style>
 	<script>
 		var imgHeight = 750;
-		var imgQuality = 0.8;		
+		var imgQuality = 0.8;
+		var imgType = "image/jpeg";
 		function exportPicture() {
 			var a = document.createElement("a");
 			var data = tb().value;
@@ -45,7 +46,7 @@
       			a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
 			} else {
 				a.download = "IMG_" + dateStamp() + ".jpg";
-				a.href = document.getElementById("img").src;
+				a.href = im().src;
 			}
 			a.innerHTML = "export";      			
 			a.style.display = "none";
@@ -56,8 +57,9 @@
 		function importFile() {
 			var fileReader = new FileReader();
 		      	fileReader.onload = function(e) {
-				if(fl().files[0].type == "image/jpeg") {
+				if(fl().files[0].type == imgType) {
 					tb().style.display = "none";
+					im().style.display = "block";
 					tb().value = "";
 					var image = new Image();
 					image.onload = function() {
@@ -70,10 +72,13 @@
 						canvas.width = w;
 						canvas.height = h;
 						ctx.drawImage(this, 0, 0, w, h);
-						document.getElementById("img").src = canvas.toDataURL("image/jpeg", imgQuality);
+						im().src = canvas.toDataURL(imgType, imgQuality);
 					};
 					image.src = e.target.result;
 				} else {
+					im().src = "";
+					im().style.display = "none";
+					tb().style.display = "block";
 					tb().value = e.target.result;
 				}
 			};
@@ -91,8 +96,9 @@
 				+ ('0' + d.getMinutes()).slice(-2)
 				+ ('0' + d.getSeconds()).slice(-2);
         }
-		function tb() { return document.getElementById("tbNote"); }
-		function fl() { return document.getElementById("fileImport"); }
+	function tb() { return document.getElementById("tbNote"); }
+	function fl() { return document.getElementById("fileImport"); }
+	function im() { return document.getElementById("img"); }
     </script>
 </head>
 <body onresize="setSize();">
