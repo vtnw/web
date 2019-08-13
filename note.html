@@ -79,8 +79,9 @@
 					tb().style.display = "block";
 					tb().value = e.target.result;
 				}
+				fl().value = "";
 			};
-			if(fl().files.length > 0 && isImg()) {
+			if(isImg()) {
 				fileReader.readAsDataURL(fl().files[0], "UTF-8");
 			} else {
 				fileReader.readAsText(fl().files[0], "UTF-8");
