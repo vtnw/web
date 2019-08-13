@@ -23,7 +23,7 @@
 		.spnLabel {
 			font-weight:bold;
 			font-size:28px;
-			padding:5px 5px 5px 5px;
+			padding:5px;
 			vertical-align:bottom;
 		}
 		.spnSpace {
@@ -37,7 +37,7 @@
 	<script>
 		var imgHeight = 750;
 		var imgQuality = 0.8;
-		function exportPicture() {
+		function exportFile() {
 			var a = document.createElement("a");
 			if(tb().value != "") {
 				a.download = "note_" + dateStamp() + ".txt";
@@ -104,8 +104,8 @@
     </script>
 </head>
 <body onresize="setSize();">
-	<div id="dvOptions" class="dvOptions">
-		<span id="spnSettings" class="spnLabel" onclick="exportPicture();">=</span>
+	<div class="dvOptions">
+		<span class="spnLabel" onclick="exportFile();">=</span>
 		<span class="spnSpace"></span>
 		<span class="spnLabel" onclick="fl().click();">+</span>
 		<input type="file" id="fileImport" onchange="importFile();" style="display:none;" />
