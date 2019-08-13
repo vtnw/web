@@ -58,6 +58,7 @@
 		      	fileReader.onload = function(e) {
 				if(fl().files[0].type == "image/jpeg") {
 					tb().style.display = "none";
+					tb().value = "";
 					var image = new Image();
 					image.onload = function() {
 						var canvas = document.createElement('canvas');
