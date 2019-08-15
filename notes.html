@@ -61,12 +61,9 @@
 		}
 	</style>
 	<script>
-		var cacheName = "notes";
 		var title = "Notes";
-		var bkpEnd = "\n<backup" + "end>\n";
 		var maxHeight = "675px";
-		var minHeight = "415px";
-		
+		var minHeight = "415px";		
 		var dbName = "notesdb";
 		var dbVersion = 1;
 		var storeName = "notes";
@@ -81,24 +78,34 @@
     				notesDb = e.target.result;
 				callback();
  			}
-		}		
-
-		function loadNotes(query) {
-			showChanges(false);
-			ttl().innerText = title;
-			showNote(false);
-			var dvList = document.createElement("div");
+		}
+		function getNotes(cb) {
+			var notes = [];
 			notesDb.transaction(storeName, "readwrite").objectStore(storeName)
 			.openCursor(null, "prev")
 			.onsuccess = function(e) {
 				var cursor = e.target.result;
 				if(cursor) {
-					if(query == null || cursor.value.content.toLowerCase().indexOf(query) >= 0) {
-                				var dv = document.createElement("div");
-						dv.id = cursor.value.id;
+					notes.push(cursor.value);
+					cursor.continue();
+				} else {
+					cb(notes);
+				}
+        		};		
+		}
+		function loadNotes(query) {
+			showChanges(false);
+			ttl().innerText = title;
+			showNote(false);
+			var notes = getNotes(function (notes) {
+				list().innerText = "";
+				for (var n of notes) {
+					if(query == null || n.content.toLowerCase().indexOf(query) >= 0) {
+	                			var dv = document.createElement("div");
+						dv.id = n.id;
 						dv.className = "dvNote";
-						dv.innerText = cursor.value.content.substring(0,20).replace(/\n/g, " ");
-						dv.dataset.content = cursor.value.content;
+						dv.innerText = n.content.substring(0,20).replace(/\n/g, " ");
+						dv.dataset.content = n.content;
 						dv.addEventListener("click", function () {
 							showChanges(false);
 							tb().value = "";
@@ -107,48 +114,44 @@
 							tb().dataset.id = this.getAttribute("id");
 							showNote(true);
 						});
-						dvList.appendChild(dv);
+						list().appendChild(dv);
 					}
-					cursor.continue();
-				} else {
-					list().innerHTML = dvList.innerHTML;
-				}
-        		};			
+        			}
+			});
 		}
-		async function exportNotes() {
+		function exportNotes() {
+			var exp = function(name, data) {
+				var a = document.createElement("a");
+				name = prompt("Name?", name + ".txt");
+				a.download = name;
+				a.innerHTML = "export";
+				a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
+				a.style.display = "none";
+				a.onclick = function (event) { document.body.removeChild(event.target); };
+				if (name) { document.body.appendChild(a);a.click(); }
+			}
 			var name = ttl().innerText;
 			var data = tb().value;
 			if (name == title) {
-				const cache = await caches.open(cacheName);
-				const keys = await cache.keys();
-				keys.sort(function(a, b){return a.url.localeCompare(b.url);});
-				for(var key of keys) {
-					var text = await (await cache.match(key)).text();
-					data = (data) ? data + bkpEnd + text : text;
-				}
-				var d = new Date();
-				d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
-				name = "notes_" + d;				
+				getNotes(function(notes) {
+					var d = new Date();
+					d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+					exp("notes_" + d, JSON.stringify(notes));
+				});
+			} else {
+				exp(name, data);
 			}
-			var a = document.createElement("a");
-			name = prompt("Name?", name + ".txt");
-			a.download = name;
-			a.innerHTML = "export";
-			a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
-			a.style.display = "none";
-			a.onclick = function (event) { document.body.removeChild(event.target); };
-			if (name) { document.body.appendChild(a);a.click(); }
 		}
 		function importNotes() {
 			var reader = new FileReader();
-			reader.onload = async function(event) {
+			reader.onload = function(event) {
 				if (ttl().innerText = title) {
-					var notes = event.target.result.split(bkpEnd);
-					const cache = await caches.open(cacheName);
-					for(note of notes) {					
-						await cache.put(note.split("\n")[0], new Response(note));						
+					var notes = JSON.parse(event.target.result);
+					for(var i=0;i<notes.length;i++) {					
+						notesDb.transaction(storeName, "readwrite").objectStore(storeName)
+						.put({"content":notes[i].content, "id": notes[i].id})
+						.onsuccess = function () {if(i == notes.length - 1) { loadNotes(); }};
 					}
-					loadNotes();
 				} else {
 					tb().value = event.target.result;
 					showChanges(true);
@@ -157,9 +160,11 @@
 			reader.readAsText(event.target.files[0], "UTF-8");
 		}
 		function clearNotes() {
-			caches.delete(cacheName).then((cache) => {
-				alert("Cleared");
-			});
+			notesDb.close()
+			.onsuccess = function() {
+				indexedDB.deleteDatabase(dbName)
+				.onsuccess = function() { alert("Deleted"); }
+			};
 		}
 		function showOptions() {
 			var id = tb().dataset.id;
