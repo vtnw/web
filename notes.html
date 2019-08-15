@@ -73,44 +73,47 @@
 		var notesDb;
 		
 		function initDb(callback) {
-			var request = indexedDB.open(dbName, dbVersion);
-			request.onupgradeneeded = function() {
-    				var store = request.result.createObjectStore(storeName,{keyPath: "id"});
+			var r = indexedDB.open(dbName, dbVersion)
+			r.onupgradeneeded = function(e) {
+    				e.target.result.createObjectStore(storeName,{keyPath: "id"});
  			}
-			request.onsuccess = function() {
-    				notesDb = request.result;
+			r.onsuccess = function(e) {
+    				notesDb = e.target.result;
 				callback();
  			}
 		}		
-		//Open issues: case search, slash, pipe chars in title
+
 		function loadNotes(query) {
 			showChanges(false);
+			ttl().innerText = title;
+			showNote(false);
+			var dvList = document.createElement("div");
 			notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-        		.openCursor(null, "prev")
-			.onsuccess = function(event) {				
-				var cursor = event.target.result;
-          			if (cursor
-				   && (query == "" || cusrsor.value.content.toLowerCase().indexOf(query) >= 0)) {
-                			var dv = document.createElement("div");
-					dv.id = cursor.value.id;
-					dv.className = "dvNote";
-					dv.innerText = cursor.value.content;
-					dv.addEventListener("click", function () {
-						showChanges(false);
-						tb().value = "";
-						ttl().innerText = this.innerText;
-						tb().value = this.innerText;
-						tb().dataset.id = this.getAttribute("id")
-						showNote(true);
-					});
-					list().appendChild(dv);
-          			}
-				else {
-					callback();
+			.openCursor(null, "prev")
+			.onsuccess = function(e) {
+				var cursor = e.target.result;
+				if(cursor) {
+					if(query == null || cursor.value.content.toLowerCase().indexOf(query) >= 0) {
+                				var dv = document.createElement("div");
+						dv.id = cursor.value.id;
+						dv.className = "dvNote";
+						dv.innerText = cursor.value.content.substring(0,20).replace(/\n/g, " ");
+						dv.dataset.content = cursor.value.content;
+						dv.addEventListener("click", function () {
+							showChanges(false);
+							tb().value = "";
+							ttl().innerText = this.innerText;
+							tb().value = this.getAttribute("data-content");
+							tb().dataset.id = this.getAttribute("id");
+							showNote(true);
+						});
+						dvList.appendChild(dv);
+					}
+					cursor.continue();
+				} else {
+					list().innerHTML = dvList.innerHTML;
 				}
         		};			
-			showNote(false);
-			ttl().innerText = title;
 		}
 		async function exportNotes() {
 			var name = ttl().innerText;
@@ -160,21 +163,20 @@
 		}
 		function showOptions() {
 			var id = tb().dataset.id;
-			var isNew = (id == "");
+			var isNew = (id == null);
 			if (list().style.display == "block") {
 				var op = prompt("Export/Import/Clear?");
 				if (op == "e") { exportNotes(); }
 				else if (op == "i") { elm("fileImport").click(); }
 				else if (op == "c") { clearNotes(); }
-				else if (op == "x") { maxHeight = prompt("max height?"); minHeight = prompt("min height?"); setSize(); }
 			} else if (tb().value != "") {
 				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.put({"content":tb().value, "id": (isNew) ? getDate().getTime() : id})
-					.onsuccess = function() { loadList(); }
+					.put({"content":tb().value, "id": (isNew) ? new Date().getTime() : parseInt(id)})
+					.onsuccess = loadNotes();
 			} else if (!isNew) {
 				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
 					.delete(id)
-					.onsuccess = function() { loadList(); }
+					.onsuccess = loadNotes();
 			} else {
 				loadNotes();
 			}
