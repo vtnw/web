@@ -69,7 +69,8 @@
 		var dbName = "notesdb";
 		var dbVersion = 1;
 		var storeName = "notes";
-		var notesDb;		
+		var notesDb;
+		
 		function initDb(callback) {
 			var r = indexedDB.open(dbName, dbVersion)
 			r.onupgradeneeded = function(e) { e.target.result.createObjectStore(storeName,{keyPath: "id"});	}
@@ -177,9 +178,8 @@
 			}
 		}
 		function clearNotes() {
-			notesDb.close().onsuccess = function() {
-				indexedDB.deleteDatabase(dbName).onsuccess = function() { alert("Deleted"); }
-			};
+			notesDb.close();
+			indexedDB.deleteDatabase(dbName).onsuccess = function() { alert("Deleted"); }
 		}
 		function titleClicked() {
 			var id = tb().dataset.id;
