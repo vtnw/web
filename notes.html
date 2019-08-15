@@ -69,8 +69,7 @@
 		var dbName = "notesdb";
 		var dbVersion = 1;
 		var storeName = "notes";
-		var notesDb;
-		
+		var notesDb;		
 		function initDb(callback) {
 			var r = indexedDB.open(dbName, dbVersion)
 			r.onupgradeneeded = function(e) { e.target.result.createObjectStore(storeName,{keyPath: "id"});	}
@@ -117,7 +116,8 @@
 		function exportFile() {
 			var exp = function(name, data) {
 				var a = document.createElement("a");
-				a.download = prompt("Name?", name);
+				name = prompt("Name?", name);
+				a.download = name;
 				a.innerHTML = "export";
 				a.href = data;
 				a.style.display = "none";
@@ -220,9 +220,7 @@
 			show(tb(), status);
 			if (status) { elm("tbSearch").value = ""; }
 		}
-		function setSize(elm) {
-			elm.style.height = (window.innerHeight > 600) ? maxHeight : minHeight;
-		}
+		function setSize(elm) { elm.style.height = (window.innerHeight > 600) ? maxHeight : minHeight; }
 	</script>
 </head>
 <body onresize="setSize(tb());setSize(list());" onload="initDb(loadNotes);">
