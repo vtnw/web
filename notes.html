@@ -27,6 +27,9 @@
 		.dvOptions {
 			margin: 10px 0px 0px 0px;
 		}
+		img {
+			width:100%;
+		}
 		.spnLabel {
 			font-weight:bold;
 			font-size:28px;
@@ -94,7 +97,6 @@
         		};		
 		}
 		function loadNotes(query) {
-			showChanges(false);
 			ttl().innerText = title;
 			showNote(false);
 			var notes = getNotes(function (notes) {
@@ -107,7 +109,6 @@
 						dv.innerText = n.content.substring(0,20).replace(/\n/g, " ");
 						dv.dataset.content = n.content;
 						dv.addEventListener("click", function () {
-							showChanges(false);
 							tb().value = "";
 							ttl().innerText = this.innerText;
 							tb().value = this.getAttribute("data-content");
@@ -119,45 +120,69 @@
         			}
 			});
 		}
-		function exportNotes() {
+		function exportFile() {
 			var exp = function(name, data) {
 				var a = document.createElement("a");
-				name = prompt("Name?", name + ".txt");
-				a.download = name;
+				a.download = prompt("Name?", name);
 				a.innerHTML = "export";
-				a.href = window.URL.createObjectURL(new Blob([data], { type: "text/plain" }));
+				a.href = data;
 				a.style.display = "none";
 				a.onclick = function (event) { document.body.removeChild(event.target); };
 				if (name) { document.body.appendChild(a);a.click(); }
-			}
+			};
 			var name = ttl().innerText;
-			var data = tb().value;
-			if (name == title) {
-				getNotes(function(notes) {
-					var d = new Date();
-					d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
-					exp("notes_" + d, JSON.stringify(notes));
-				});
+			var data = objUrl(tb().value);
+			var d = new Date();
+			d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2)
+				+ ('0' + d.getHours()).slice(-2) + ('0' + d.getMinutes()).slice(-2) + ('0' + d.getSeconds()).slice(-2);
+			if(im().style.display == "block") {
+				exp("IMG_" + d + ".jpg", im().src);
+			} else if (name == title) {
+				getNotes(function(notes) { exp("notes_" + d + ".txt", objUrl(JSON.stringify(notes))); });
 			} else {
-				exp(name, data);
+				exp(name + ".txt", data);
 			}
 		}
-		function importNotes() {
-			var reader = new FileReader();
-			reader.onload = function(event) {
-				if (ttl().innerText = title) {
+		function importFile() {
+			var fileReader = new FileReader();
+			fileReader.onload = function(e) {
+				if(isImg()) {
+					createNote();
+					var image = new Image();
+					image.onload = function() {
+						var cvs = document.createElement("canvas");
+						var ctx = cvs.getContext("2d");
+						var w = image.width;
+						var h = image.height;
+						w = 750/h*w;
+						h = 750;
+						cvs.width = w;
+						cvs.height = h;
+						ctx.drawImage(this, 0, 0, w, h);
+						im().src = cvs.toDataURL("image/jpeg", 0.8);
+					};
+					image.src = e.target.result;
+				} else if (ttl().innerText == title) {
+					im().src = "";
 					var notes = JSON.parse(event.target.result);
-					for(var i=0;i<notes.length;i++) {					
+					var a = 0;
+					for(var n of notes) {					
 						notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-						.put({"content":notes[i].content, "id": notes[i].id})
-						.onsuccess = function () {if(i == notes.length - 1) { loadNotes(); }};
+						.put(n).onsuccess = function () {a++;if(a == notes.length) { loadNotes(); }};
 					}
 				} else {
-					tb().value = event.target.result;
-					showChanges(true);
+					im().src = "";
+					tb().value = e.target.result;
 				}
+				tb().style.display = isImg() ? "none" : "block";
+				im().style.display = isImg() ? "block" : "none";
+				fl().value = "";
 			};
-			reader.readAsText(event.target.files[0], "UTF-8");
+			if(isImg()) {
+				fileReader.readAsDataURL(fl().files[0], "UTF-8");
+			} else {
+				fileReader.readAsText(fl().files[0], "UTF-8");
+			}
 		}
 		function clearNotes() {
 			notesDb.close()
@@ -166,14 +191,11 @@
 				.onsuccess = function() { alert("Deleted"); }
 			};
 		}
-		function showOptions() {
+		function titleClicked() {
 			var id = tb().dataset.id;
-			var isNew = (id == null);
-			if (list().style.display == "block") {
-				var op = prompt("Export/Import/Clear?");
-				if (op == "e") { exportNotes(); }
-				else if (op == "i") { elm("fileImport").click(); }
-				else if (op == "c") { clearNotes(); }
+			var isNew = (id == "");
+			if (ttl().innerText == title) {
+				createNote();
 			} else if (tb().value != "") {
 				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
 					.put({"content":tb().value, "id": (isNew) ? new Date().getTime() : parseInt(id)})
@@ -187,21 +209,27 @@
 			}
 		}
 		function createNote() {
-			ttl().innerText = title;
+			ttl().innerText = "New";
 			showNote(true);
 			tb().value = "";
-			tb().dataset.id == "";
+			tb().dataset.id = "";
 			tb().focus();
 		}
 		function list() { return elm("dvNotes"); }
 		function tb() { return elm("tbNote"); }
-		function spn() { return elm("spnOptions"); }
 		function ttl() { return elm("spnTitle"); }
+		function fl() { return elm("fileImport"); }
+		function im() { return elm("img"); }
 		function elm(id) { return document.getElementById(id); }
-		function showChanges(status) {
-			spn().style.color = status ? "red" : "";
+		function isImg() { return fl().files[0].type == "image/jpeg"; }
+		function objUrl(d) {return window.URL.createObjectURL(new Blob([d], { type: "text/plain" })); }
+		function dt() {
+			var d = new Date();
+			return  d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2)
+				+ ('0' + d.getHours()).slice(-2) + ('0' + d.getMinutes()).slice(-2) + ('0' + d.getSeconds()).slice(-2);
 		}
 		function showNote(status) {
+			im().style.display = "none";
 			list().style.display = status ? "none" : "block";
 			tb().style.display = status ? "block" : "none";
 			if (status) { elm("tbSearch").value = ""; }
@@ -214,13 +242,14 @@
 </head>
 <body onresize="setSize();" onload="initDb(loadNotes);">
 	<div class="dvOptions">
-		<span id="spnOptions" class="spnLabel" onclick="showOptions();">=</span>
-		<span id="spnTitle" onclick="loadNotes();">Notes</span>
-		<span class="spnLabel" onclick="createNote();">+</span>
-		<input type="file" id="fileImport" onchange="importNotes();" style="display:none;" />
+		<span class="spnLabel" onclick="exportFile();">=</span>
+		<span id="spnTitle" onclick="titleClicked();">Notes</span>
+		<span class="spnLabel" onclick="fl().click();">+</span>
+		<input type="file" id="fileImport" onchange="importFile();" style="display:none" />
 		<input type="search" id="tbSearch" onkeyup="loadNotes(this.value);" autocapitalize="none" />
 	</div>
 	<div id="dvNotes"></div>
-	<textarea id="tbNote" onfocus="showChanges(true);"></textarea>
+	<textarea id="tbNote"></textarea>
+	<img id="img" syle="display:none" />
 </body>
 </html>
