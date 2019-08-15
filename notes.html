@@ -169,11 +169,11 @@
 				else if (op == "x") { maxHeight = prompt("max height?"); minHeight = prompt("min height?"); setSize(); }
 			} else if (tb().value != "") {
 				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.put({"content":tb().value, "id": (isNew) ? getDate().getTime() : id});
+					.put({"content":tb().value, "id": (isNew) ? getDate().getTime() : id})
 					.onsuccess = function() { loadList(); }
 			} else if (!isNew) {
-				notesDb.transaction(storeName, "readwrite").objectStore(storeName);
-					.delete(id);
+				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
+					.delete(id)
 					.onsuccess = function() { loadList(); }
 			} else {
 				loadNotes();
