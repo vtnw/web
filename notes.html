@@ -65,7 +65,8 @@
 	<script>
 		var title = "Notes";
 		var maxHeight = "675px";
-		var minHeight = "415px";		
+		var minHeight = "415px";
+		var maxLen = 50;
 		var dbName = "notesdb";
 		var dbVersion = 1;
 		var storeName = "notes";
@@ -100,7 +101,7 @@
 						var dv = document.createElement("div");
 						dv.id = n.id;
 						dv.className = "dvNote";
-						dv.innerText = n.content.substring(0, 20).replace(/\n/g, " ");
+						dv.innerText = n.content.substring(0, maxLen).replace(/\n/g, " ");
 						dv.dataset.content = n.content;
 						dv.addEventListener("click", function () {
 							tb().value = "";
