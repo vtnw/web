@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,13 +73,8 @@
 		
 		function initDb(callback) {
 			var r = indexedDB.open(dbName, dbVersion)
-			r.onupgradeneeded = function(e) {
-    				e.target.result.createObjectStore(storeName,{keyPath: "id"});
- 			}
-			r.onsuccess = function(e) {
-    				notesDb = e.target.result;
-				callback();
- 			}
+			r.onupgradeneeded = function(e) { e.target.result.createObjectStore(storeName,{keyPath: "id"});	}
+			r.onsuccess = function(e) { notesDb = e.target.result; callback(); }
 		}
 		function getNotes(cb) {
 			var notes = [];
@@ -94,7 +88,7 @@
 				} else {
 					cb(notes);
 				}
-        		};		
+			};		
 		}
 		function loadNotes(query) {
 			ttl().innerText = title;
@@ -103,7 +97,7 @@
 				list().innerText = "";
 				for (var n of notes) {
 					if(query == null || n.content.toLowerCase().indexOf(query) >= 0) {
-	                			var dv = document.createElement("div");
+						var dv = document.createElement("div");
 						dv.id = n.id;
 						dv.className = "dvNote";
 						dv.innerText = n.content.substring(0,20).replace(/\n/g, " ");
@@ -117,7 +111,7 @@
 						});
 						list().appendChild(dv);
 					}
-        			}
+				}
 			});
 		}
 		function exportFile() {
@@ -163,7 +157,6 @@
 					};
 					image.src = e.target.result;
 				} else if (ttl().innerText == title) {
-					im().src = "";
 					var notes = JSON.parse(event.target.result);
 					var a = 0;
 					for(var n of notes) {					
@@ -171,11 +164,10 @@
 						.put(n).onsuccess = function () {a++;if(a == notes.length) { loadNotes(); }};
 					}
 				} else {
-					im().src = "";
 					tb().value = e.target.result;
 				}
-				tb().style.display = isImg() ? "none" : "block";
-				im().style.display = isImg() ? "block" : "none";
+				show(tb(), !isImg());
+				show(im(), isImg());
 				fl().value = "";
 			};
 			if(isImg()) {
@@ -185,10 +177,8 @@
 			}
 		}
 		function clearNotes() {
-			notesDb.close()
-			.onsuccess = function() {
-				indexedDB.deleteDatabase(dbName)
-				.onsuccess = function() { alert("Deleted"); }
+			notesDb.close().onsuccess = function() {
+				indexedDB.deleteDatabase(dbName).onsuccess = function() { alert("Deleted"); }
 			};
 		}
 		function titleClicked() {
@@ -221,26 +211,21 @@
 		function fl() { return elm("fileImport"); }
 		function im() { return elm("img"); }
 		function elm(id) { return document.getElementById(id); }
+		function show(elm, status) { elm.style.display = status ? "block" : "none"; }
 		function isImg() { return fl().files[0].type == "image/jpeg"; }
 		function objUrl(d) {return window.URL.createObjectURL(new Blob([d], { type: "text/plain" })); }
-		function dt() {
-			var d = new Date();
-			return  d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2)
-				+ ('0' + d.getHours()).slice(-2) + ('0' + d.getMinutes()).slice(-2) + ('0' + d.getSeconds()).slice(-2);
-		}
 		function showNote(status) {
-			im().style.display = "none";
-			list().style.display = status ? "none" : "block";
-			tb().style.display = status ? "block" : "none";
+			show(im(), false);
+			show(list(), !status);
+			show(tb(), status);
 			if (status) { elm("tbSearch").value = ""; }
 		}
-		function setSize() {
-			tb().style.height = (window.innerHeight > 600) ? maxHeight : minHeight;
-			list().style.height = (window.innerHeight > 600) ? maxHeight : minHeight;
+		function setSize(elm) {
+			elm.style.height = (window.innerHeight > 600) ? maxHeight : minHeight;
 		}
 	</script>
 </head>
-<body onresize="setSize();" onload="initDb(loadNotes);">
+<body onresize="setSize(tb());setSize(list());" onload="initDb(loadNotes);">
 	<div class="dvOptions">
 		<span class="spnLabel" onclick="exportFile();">=</span>
 		<span id="spnTitle" onclick="titleClicked();">Notes</span>
