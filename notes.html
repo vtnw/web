@@ -85,7 +85,7 @@
 		//Open issues: case search, slash, pipe chars in title
 		function loadNotes(query) {
 			showChanges(false);
-			notesDb.transaction(storeName, "readwrite").objectStore(storeName);
+			notesDb.transaction(storeName, "readwrite").objectStore(storeName)
         		.openCursor(null, "prev")
 			.onsuccess = function(event) {				
 				var cursor = event.target.result;
