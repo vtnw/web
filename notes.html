@@ -52,7 +52,7 @@
 			overflow-y:auto;
 		}
 		.dvNote {
-			height:30px;
+			line-height:40px;
 			text-overflow: ellipsis;
 			white-space:nowrap;
 			overflow:hidden;
@@ -100,7 +100,7 @@
 						var dv = document.createElement("div");
 						dv.id = n.id;
 						dv.className = "dvNote";
-						dv.innerText = n.content.substring(0,20).replace(/\n/g, " ");
+						dv.innerText = n.content.substring(0, 20).replace(/\n/g, " ");
 						dv.dataset.content = n.content;
 						dv.addEventListener("click", function () {
 							tb().value = "";
@@ -125,17 +125,15 @@
 				a.onclick = function (event) { document.body.removeChild(event.target); };
 				if (name) { document.body.appendChild(a);a.click(); }
 			};
-			var name = ttl().innerText;
-			var data = objUrl(tb().value);
 			var d = new Date();
 			d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2)
 				+ ('0' + d.getHours()).slice(-2) + ('0' + d.getMinutes()).slice(-2) + ('0' + d.getSeconds()).slice(-2);
 			if(im().style.display == "block") {
 				exp("IMG_" + d + ".jpg", im().src);
-			} else if (name == title) {
+			} else if (ttl().innerText == title) {
 				getNotes(function(notes) { exp("notes_" + d + ".txt", objUrl(JSON.stringify(notes))); });
 			} else {
-				exp(name + ".txt", data);
+				exp(tb().value.split("\n")[0] + ".txt", objUrl(tb().value));
 			}
 		}
 		function importFile() {
