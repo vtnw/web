@@ -96,10 +96,10 @@
 						dv.id = n.id;
 						dv.className = "dvNote";
 						dv.innerText = n.content.substring(0, maxLen).replace(/\n/g, " ");
-						dv.dataset.content = n.content;
+						dv.dataset.text = n.content;
 						dv.addEventListener("click", function () {
 							ttl().innerText = this.innerText;
-							tb().value = this.getAttribute("data-content");
+							tb().value = this.getAttribute("data-text");
 							tb().dataset.text = tb().value;
 							tb().dataset.id = this.getAttribute("id");
 							tb().scrollTop = 0;
@@ -196,6 +196,13 @@
 			tb().dataset.text = "";
 			tb().focus();
 		}
+		function showNote(status) {
+			show(im(), false);
+			show(list(), !status);
+			show(tb(), status);
+			show(elm("tbSearch"), !status);
+			if (status) { elm("tbSearch").value = ""; }
+		}
 		function list() { return elm("dvNotes"); }
 		function tb() { return elm("tbNote"); }
 		function ttl() { return elm("spnTitle"); }
@@ -205,13 +212,6 @@
 		function show(elm, status) { elm.style.display = status ? "block" : "none"; }
 		function isImg() { return fl().files[0].type == "image/jpeg"; }
 		function objUrl(d) {return window.URL.createObjectURL(new Blob([d], { type: "text/plain" })); }
-		function showNote(status) {
-			show(im(), false);
-			show(list(), !status);
-			show(tb(), status);
-			show(elm("tbSearch"), !status);
-			if (status) { elm("tbSearch").value = ""; }
-		}
 		function setSize(elm, ma, mi) { elm.style.height = ((window.innerHeight > 600) ? ma : mi) + "px"; }
 	</script>
 </head>
