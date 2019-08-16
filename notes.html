@@ -53,7 +53,7 @@
 			width:100%;
 		}
 		.dvOptions {
-			margin: 10px 0px 0px 0px;
+			margin-top: 10px;
 		}
 		img {
 			width:100%;
@@ -99,6 +99,7 @@
 						dv.innerText = n.content.substring(0, maxLen).replace(/\n/g, " ");
 						dv.dataset.text = n.content;
 						dv.addEventListener("click", function () {
+							tb().value = "";
 							tb().scrollTop = 0;
 							ttl().innerText = this.innerText;
 							tb().value = this.getAttribute("data-text");
@@ -141,14 +142,13 @@
 					var image = new Image();
 					image.onload = function() {
 						var cvs = document.createElement("canvas");
-						var ctx = cvs.getContext("2d");
 						var w = image.width;
 						var h = image.height;
 						w = 750/h*w;
 						h = 750;
 						cvs.width = w;
 						cvs.height = h;
-						ctx.drawImage(this, 0, 0, w, h);
+						cvs.getContext("2d").drawImage(this, 0, 0, w, h);
 						im().src = cvs.toDataURL("image/jpeg", 0.8);
 					};
 					image.src = e.target.result;
