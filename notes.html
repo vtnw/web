@@ -223,7 +223,7 @@
 		<span id="spnTitle" onclick="titleClicked();">Notes</span>
 		<span class="spnLabel" onclick="fl().click();">+</span>
 		<input type="file" id="fileImport" onchange="importFile();" style="display:none" />
-		<input type="search" id="tbSearch" onkeyup="loadNotes(this.value);" autocapitalize="none" />
+		<input type="search" id="tbSearch" onkeyup="loadNotes(this.value);" onsearch="loadNotes(this.value);this.blur();" autocapitalize="none" />
 	</div>
 	<div id="dvNotes"></div>
 	<textarea id="tbNote"></textarea>
