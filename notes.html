@@ -70,7 +70,6 @@
 		var dbVersion = 1;
 		var storeName = "notes";
 		var notesDb;
-		
 		function initDb(callback) {
 			var r = indexedDB.open(dbName, dbVersion)
 			r.onupgradeneeded = function(e) { e.target.result.createObjectStore(storeName,{keyPath: "id"});	}
