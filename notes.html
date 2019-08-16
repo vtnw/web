@@ -83,12 +83,8 @@
 			.openCursor(null, "prev")
 			.onsuccess = function(e) {
 				var cursor = e.target.result;
-				if(cursor) {
-					notes.push(cursor.value);
-					cursor.continue();
-				} else {
-					cb(notes);
-				}
+				if(cursor) { notes.push(cursor.value); cursor.continue();
+				} else { cb(notes); }
 			};		
 		}
 		function loadNotes(query) {
@@ -107,6 +103,7 @@
 							tb().value = "";
 							ttl().innerText = this.innerText;
 							tb().value = this.getAttribute("data-content");
+							tb().dataset.text = tb().value;
 							tb().dataset.id = this.getAttribute("id");
 							showNote(true);
 						});
@@ -170,11 +167,8 @@
 				show(im(), isImg());
 				fl().value = "";
 			};
-			if(isImg()) {
-				fileReader.readAsDataURL(fl().files[0], "UTF-8");
-			} else {
-				fileReader.readAsText(fl().files[0], "UTF-8");
-			}
+			if(isImg()) { fileReader.readAsDataURL(fl().files[0], "UTF-8");
+			} else { fileReader.readAsText(fl().files[0], "UTF-8"); }
 		}
 		function clearNotes() {
 			notesDb.close();
@@ -182,19 +176,18 @@
 		}
 		function titleClicked() {
 			var id = tb().dataset.id;
-			var isNew = (id == "");
 			if (ttl().innerText == title) {
 				createNote();
-			} else if (tb().value != "") {
-				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.put({"content":tb().value, "id": (isNew) ? new Date().getTime() : parseInt(id)})
-					.onsuccess = loadNotes();
-			} else if (!isNew) {
-				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.delete(id)
-					.onsuccess = loadNotes();
 			} else {
-				loadNotes();
+				if (id != "" && tb().value != tb().dataset.text) {
+					notesDb.transaction(storeName, "readwrite").objectStore(storeName).delete(parseInt(id));
+				}
+				if (tb().value != "" && tb().value != tb().dataset.text) {
+					notesDb.transaction(storeName, "readwrite").objectStore(storeName)
+					.put({"content":tb().value, "id": new Date().getTime()}).onsuccess = loadNotes();
+				} else {
+					loadNotes();
+				}
 			}
 		}
 		function createNote() {
@@ -202,6 +195,7 @@
 			showNote(true);
 			tb().value = "";
 			tb().dataset.id = "";
+			tb().dataset.text = "";
 			tb().focus();
 		}
 		function list() { return elm("dvNotes"); }
