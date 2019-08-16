@@ -6,7 +6,7 @@
 	<style>
 		textarea {
 			width:97%;
-			height:675px;
+			height:685px;
 			border:none;
 			outline: none;
 			padding: 5px;
@@ -64,8 +64,6 @@
 	</style>
 	<script>
 		var title = "Notes";
-		var maxHeight = "675px";
-		var minHeight = "415px";
 		var maxLen = 50;
 		var dbName = "notesdb";
 		var dbVersion = 1;
@@ -214,10 +212,10 @@
 			show(elm("tbSearch"), !status);
 			if (status) { elm("tbSearch").value = ""; }
 		}
-		function setSize(elm) { elm.style.height = (window.innerHeight > 600) ? maxHeight : minHeight; }
+		function setSize(elm, ma, mi) { elm.style.height = ((window.innerHeight > 600) ? ma : mi) + "px"; }
 	</script>
 </head>
-<body onresize="setSize(tb());setSize(list());" onload="initDb(loadNotes);">
+<body onresize="setSize(tb(), 685, 425);setSize(list(), 675, 415);" onload="initDb(loadNotes);">
 	<div class="dvOptions">
 		<span class="spnLabel" onclick="exportFile();">=</span>
 		<span id="spnTitle" onclick="titleClicked();">Notes</span>
