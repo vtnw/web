@@ -27,11 +27,11 @@
 			font-weight:bold;
 			font-size:28px;
 			padding:5px;
-			vertical-align:bottom;
 		}
 		#spnTitle {
 			display:inline-block;
 			padding:5px;
+			line-height:10px;
 			width:82%;
 			font-size: 16px;
 			text-align:center;
@@ -42,7 +42,7 @@
 		}
 		#dvNotes {
 			margin: 0px 5px 0px 5px;
-			height:675px;
+			height:670px;
 			overflow-y:auto;
 		}
 		.dvNote {
@@ -90,6 +90,7 @@
 			showNote(false);
 			var notes = getNotes(function (notes) {
 				list().innerText = "";
+				list().scrollTop = 0;
 				for (var n of notes) {
 					if(query == null || n.content.toLowerCase().indexOf(query) >= 0) {
 						var dv = document.createElement("div");
@@ -98,11 +99,11 @@
 						dv.innerText = n.content.substring(0, maxLen).replace(/\n/g, " ");
 						dv.dataset.text = n.content;
 						dv.addEventListener("click", function () {
+							tb().scrollTop = 0;
 							ttl().innerText = this.innerText;
 							tb().value = this.getAttribute("data-text");
 							tb().dataset.text = tb().value;
 							tb().dataset.id = this.getAttribute("id");
-							tb().scrollTop = 0;
 							showNote(true);
 						});
 						list().appendChild(dv);
@@ -215,7 +216,7 @@
 		function setSize(elm, ma, mi) { elm.style.height = ((window.innerHeight > 600) ? ma : mi) + "px"; }
 	</script>
 </head>
-<body onresize="setSize(tb(), 690, 430);setSize(list(), 675, 415);" onload="initDb(loadNotes);">
+<body onresize="setSize(tb(), 690, 430);setSize(list(), 670, 415);" onload="initDb(loadNotes);">
 	<div class="dvOptions">
 		<span class="spnLabel" onclick="exportFile();">=</span>
 		<span id="spnTitle" onclick="titleClicked();">Notes</span>
