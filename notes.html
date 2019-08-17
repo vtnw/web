@@ -78,8 +78,7 @@
 		function getNotes(cb) {
 			var notes = [];
 			notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-			.openCursor(null, "prev")
-			.onsuccess = function(e) {
+			.openCursor(null, "prev").onsuccess = function(e) {
 				var cursor = e.target.result;
 				if(cursor) { notes.push(cursor.value); cursor.continue();
 				} else { cb(notes); }
@@ -115,12 +114,13 @@
 		function exportFile() {
 			var exp = function(name, data) {
 				var a = document.createElement("a");
-				name = prompt("Name?", name);
-				a.download = name;
-				a.href = data;
+				var n = prompt("Name?", name);
+				a.download = n ? n : name.split(".")[0];
+				a.href = (n) ? data : "data:";
 				a.style.display = "none";
 				a.onclick = function (event) { document.body.removeChild(event.target); };
-				if (name) { document.body.appendChild(a);a.click(); }
+				document.body.appendChild(a);
+				a.click();
 			};
 			var d = new Date();
 			d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2)
