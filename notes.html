@@ -95,7 +95,7 @@
 						var dv = document.createElement("div");
 						dv.id = n.id;
 						dv.className = "dvNote";
-						dv.innerText = n.content.substring(0, 50).replace(/\n/g, " ");
+						dv.innerText = n.content.split("\n")[0];
 						dv.dataset.text = n.content;
 						dv.addEventListener("click", function () {
 							tb().value = "";
@@ -114,13 +114,13 @@
 		function exportFile() {
 			var exp = function(name, data) {
 				var a = document.createElement("a");
-				var n = prompt("Name?", name);
-				a.download = n ? n : name.split(".")[0];
-				a.href = (n) ? data : "data:";
+				name = prompt("Name?", name);
+				a.download = name;
+				a.href = data;
 				a.style.display = "none";
 				a.onclick = function (event) { document.body.removeChild(event.target); };
 				document.body.appendChild(a);
-				a.click();
+				if(name) { a.click(); }
 			};
 			var d = new Date();
 			d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2)
