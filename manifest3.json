@@ -1,4 +1,5 @@
 {
+  "name": "Web",
   "background_color": red,
   "display": "minimal-ui",
   "theme_color": red
