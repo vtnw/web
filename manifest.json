@@ -1,5 +1,5 @@
 {
-  "name": "Web1",
+  "name": "Web2",
   "icons": [
     {
       "src": "images/icon.png",
@@ -13,6 +13,6 @@
     }
   ],
   "background_color": "#ffffff",
-  "display": "fullscreen",
+  "display": "minimal-ui",
   "theme_color": "#ffffff"
 }
