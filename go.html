@@ -1,5 +1,5 @@
 <link rel="manifest" href="manifest.json">
 <script>
-  var u = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("u").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1");
+  var u = decodeURIComponent(location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("u").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
   if(u.length > 0 && localStorage.getItem("u").length == 0) { location.href= u; }
 </script>
