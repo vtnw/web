@@ -2,6 +2,6 @@
 <script>
   var u = decodeURIComponent(location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("u").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
   if(u != "" && localStorage["u"] != "1") { location.href= u; }
-  document.appendLine(u);
-  document.appendLine(localStorage["u"]);
+  document.append(u);
+  document.append(localStorage["u"]);
 </script>
