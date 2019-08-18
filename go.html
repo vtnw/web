@@ -1,2 +1,2 @@
 <link rel="manifest" href="manifest.json">
-<script>if(u != "" && localStorage.getItem("u") != "1") { location.href=decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("u").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")); }</script>
+<script>if(u.length > 0 && localStorage.getItem("u").length == 0) { location.href=decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("u").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1")); }</script>
