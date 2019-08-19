@@ -81,6 +81,7 @@
 			var notes = getNotes(function (notes) {
 				list().innerText = "";
 				list().scrollTop = 0;
+				notes.sort(function(a, b){return a.content.localeCompare(b.content);});
 				for (var n of notes) {
 					var dv = document.createElement("div");
 					dv.id = n.id;
