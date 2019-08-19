@@ -6,23 +6,13 @@
 	<style>
 		textarea {
 			width:97%;
-			height:655px;
+			height:680px;
 			border:none;
 			outline: none;
 			padding: 5px;
 			font-size:16px;
 			font-family:inherit;
 			resize:none;
-			margin-top:44px;
-		}
-		#tbSearch {
-			width:97%;
-			border:none;
-			outline: none;
-			padding: 5px;
-			margin-bottom:5px;
-			font-size:16px;
-			font-family:inherit;
 		}
 		.spnLabel {
 			font-weight:bold;
@@ -43,7 +33,7 @@
 		}
 		#dvNotes {
 			margin: 0px 5px 0px 5px;
-			height:675px;
+			height:680px;
 			overflow-y:auto;
 		}
 		.dvNote {
@@ -91,23 +81,21 @@
 				list().innerText = "";
 				list().scrollTop = 0;
 				for (var n of notes) {
-					if(query == null || n.content.split("\n")[0].toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-						var dv = document.createElement("div");
-						dv.id = n.id;
-						dv.className = "dvNote";
-						dv.innerText = n.content.split("\n")[0];
-						dv.dataset.text = n.content;
-						dv.addEventListener("click", function () {
-							tb().value = "";
-							tb().value = this.getAttribute("data-text");
-							tb().dataset.text = tb().value;
-							tb().dataset.id = this.getAttribute("id");
-							ttl().innerText = tb().value.split("\n")[0];
-							showNote(true);
-							tb().scrollTop = 0;
-						});
-						list().appendChild(dv);
-					}
+					var dv = document.createElement("div");
+					dv.id = n.id;
+					dv.className = "dvNote";
+					dv.innerText = n.content.split("\n")[0];
+					dv.dataset.text = n.content;
+					dv.addEventListener("click", function () {
+						tb().value = "";
+						tb().value = this.getAttribute("data-text");
+						tb().dataset.text = tb().value;
+						tb().dataset.id = this.getAttribute("id");
+						ttl().innerText = tb().value.split("\n")[0];
+						showNote(true);
+						tb().scrollTop = 0;
+					});
+					list().appendChild(dv);
 				}
 			});
 		}
@@ -200,8 +188,6 @@
 			show(im(), false);
 			show(list(), !status);
 			show(tb(), status);
-			show(elm("tbSearch"), !status);
-			if (status) { elm("tbSearch").value = ""; }
 		}
 		function list() { return elm("dvNotes"); }
 		function tb() { return elm("tbNote"); }
@@ -215,13 +201,12 @@
 		function setSize(elm, ma, mi) { elm.style.height = ((window.innerHeight > 600) ? ma : mi) + "px"; }
 	</script>
 </head>
-<body onresize="setSize(tb(), 655, 400);setSize(list(), 675, 420);" onload="initDb(loadNotes);">
+<body onresize="setSize(tb(), 680, 430);setSize(list(), 680, 430);" onload="initDb(loadNotes);">
 	<div class="dvOptions">
 		<span class="spnLabel" onclick="exportFile();">=</span>
 		<span id="spnTitle" onclick="titleClicked();">Notes</span>
 		<span class="spnLabel" onclick="fl().click();">+</span>
 		<input type="file" id="fileImport" onchange="importFile();" style="display:none" />
-		<input type="search" id="tbSearch" onkeyup="loadNotes(this.value);" onsearch="loadNotes(this.value);this.blur();" autocapitalize="none" />
 	</div>
 	<div id="dvNotes"></div>
 	<textarea id="tbNote"></textarea>
