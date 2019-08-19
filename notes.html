@@ -65,7 +65,7 @@
 		}
 	</style>
 	<script>
-		var title = "Notes";
+		var title = "All Notes";
 		var dbName = "notes";
 		var dbVersion = 1;
 		var storeName = "notes";
@@ -91,7 +91,7 @@
 				list().innerText = "";
 				list().scrollTop = 0;
 				for (var n of notes) {
-					if(query == null || n.content.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+					if(query == null || n.content.split("\n")[0].toLowerCase().indexOf(query.toLowerCase()) >= 0) {
 						var dv = document.createElement("div");
 						dv.id = n.id;
 						dv.className = "dvNote";
