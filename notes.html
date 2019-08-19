@@ -78,7 +78,7 @@
 					dv.innerText = n.content.split("\n")[0];
 					dv.dataset.text = n.content;
 					dv.addEventListener("click", function () {
-						var n = this.getAttribute("data-text");console.log(this.dataset.text);
+						var n = this.dataset.text;
 						tb().innerText = n;
 						tb().dataset.text = n;
 						tb().dataset.id = this.getAttribute("id");
@@ -155,7 +155,7 @@
 			var id = tb().dataset.id;
 			if (ttl().innerText == title) {
 				createNote();
-			} else {
+			} else {console.log(tb().innerText);
 				if (id != "" && tb().innerText != tb().dataset.text) {
 					notesDb.transaction(storeName, "readwrite").objectStore(storeName).delete(parseInt(id));
 				}
