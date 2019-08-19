@@ -4,6 +4,26 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Notes</title>
 	<style>
+		textarea {
+			width:97%;
+			height:655px;
+			border:none;
+			outline: none;
+			padding: 5px;
+			font-size:16px;
+			font-family:inherit;
+			resize:none;
+			margin-top:44px;
+		}
+		#tbSearch {
+			width:97%;
+			border:none;
+			outline: none;
+			padding: 5px;
+			margin-bottom:5px;
+			font-size:16px;
+			font-family:inherit;
+		}
 		.spnLabel {
 			font-weight:bold;
 			font-size:28px;
@@ -12,7 +32,7 @@
 		#spnTitle {
 			display:inline-block;
 			padding:5px;
-			line-height:15px;
+			line-height:10px;
 			width:82%;
 			font-size: 16px;
 			text-align:center;
@@ -21,14 +41,13 @@
 			white-space:nowrap;
 			overflow:hidden;
 		}
-		#dvNotes, #tbNote {
-			margin: 15px 5px 0px 5px;
-			height:685px;
+		#dvNotes {
+			margin: 0px 5px 0px 5px;
+			height:675px;
 			overflow-y:auto;
-			outline:none;
 		}
 		.dvNote {
-			margin-bottom:30px;
+			line-height:50px;
 			text-overflow: clip;
 			white-space:nowrap;
 			overflow:hidden;
@@ -65,28 +84,30 @@
 				} else { cb(notes); }
 			};		
 		}
-		function loadNotes() {
+		function loadNotes(query) {
 			ttl().innerText = title;
 			showNote(false);
 			var notes = getNotes(function (notes) {
 				list().innerText = "";
 				list().scrollTop = 0;
 				for (var n of notes) {
-					var dv = document.createElement("div");
-					dv.id = n.id;
-					dv.className = "dvNote";
-					dv.innerText = n.content.split("\n")[0];
-					dv.dataset.text = n.content;
-					dv.addEventListener("click", function () {
-						var n = this.dataset.text;
-						tb().innerText = n;
-						tb().dataset.text = n;
-						tb().dataset.id = this.getAttribute("id");
-						ttl().innerText = n.split("\n")[0];
-						showNote(true);
-						tb().scrollTop = 0;
-					});
-					list().appendChild(dv);
+					if(query == null || n.content.split("\n")[0].toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+						var dv = document.createElement("div");
+						dv.id = n.id;
+						dv.className = "dvNote";
+						dv.innerText = n.content.split("\n")[0];
+						dv.dataset.text = n.content;
+						dv.addEventListener("click", function () {
+							tb().value = "";
+							tb().value = this.getAttribute("data-text");
+							tb().dataset.text = tb().value;
+							tb().dataset.id = this.getAttribute("id");
+							ttl().innerText = tb().value.split("\n")[0];
+							showNote(true);
+							tb().scrollTop = 0;
+						});
+						list().appendChild(dv);
+					}
 				}
 			});
 		}
@@ -109,7 +130,7 @@
 			} else if (ttl().innerText == title) {
 				getNotes(function(notes) { exp("notes_" + d + ".txt", objUrl(JSON.stringify(notes))); });
 			} else {
-				exp(tb().innerText.split("\n")[0] + ".txt", objUrl(tb().innerText));
+				exp(tb().value.split("\n")[0] + ".txt", objUrl(tb().value));
 			}
 		}
 		function importFile() {
@@ -138,7 +159,7 @@
 						.put(n).onsuccess = function () {a++;if(a == notes.length) { loadNotes(); }};
 					}
 				} else {
-					tb().innerText = e.target.result;
+					tb().value = e.target.result;
 				}
 				show(tb(), !isImg());
 				show(im(), isImg());
@@ -155,13 +176,13 @@
 			var id = tb().dataset.id;
 			if (ttl().innerText == title) {
 				createNote();
-			} else {console.log(tb().innerText);
-				if (id != "" && tb().innerText != tb().dataset.text) {
+			} else {
+				if (id != "" && tb().value != tb().dataset.text) {
 					notesDb.transaction(storeName, "readwrite").objectStore(storeName).delete(parseInt(id));
 				}
-				if (tb().innerText != "" && tb().innerText != tb().dataset.text) {
+				if (tb().value != "" && tb().value != tb().dataset.text) {
 					notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.put({"content":tb().innerText, "id": new Date().getTime()}).onsuccess = loadNotes();
+					.put({"content":tb().value, "id": new Date().getTime()}).onsuccess = loadNotes();
 				} else {
 					loadNotes();
 				}
@@ -170,7 +191,7 @@
 		function createNote() {
 			ttl().innerText = "New";
 			showNote(true);
-			tb().innerText = "";
+			tb().value = "";
 			tb().dataset.id = "";
 			tb().dataset.text = "";
 			tb().focus();
@@ -179,6 +200,8 @@
 			show(im(), false);
 			show(list(), !status);
 			show(tb(), status);
+			show(elm("tbSearch"), !status);
+			if (status) { elm("tbSearch").value = ""; }
 		}
 		function list() { return elm("dvNotes"); }
 		function tb() { return elm("tbNote"); }
@@ -189,18 +212,19 @@
 		function show(elm, status) { elm.style.display = status ? "block" : "none"; }
 		function isImg() { return fl().files[0].type == "image/jpeg"; }
 		function objUrl(d) {return window.URL.createObjectURL(new Blob([d], { type: "text/plain" })); }
-		function setSize(elm) { elm.style.height = ((window.innerHeight > 600) ? 685 : 425) + "px"; }
+		function setSize(elm, ma, mi) { elm.style.height = ((window.innerHeight > 600) ? ma : mi) + "px"; }
 	</script>
 </head>
-<body onresize="setSize(tb());setSize(list());" onload="initDb(loadNotes);">
+<body onresize="setSize(tb(), 655, 400);setSize(list(), 675, 420);" onload="initDb(loadNotes);">
 	<div class="dvOptions">
 		<span class="spnLabel" onclick="exportFile();">=</span>
 		<span id="spnTitle" onclick="titleClicked();">Notes</span>
 		<span class="spnLabel" onclick="fl().click();">+</span>
 		<input type="file" id="fileImport" onchange="importFile();" style="display:none" />
+		<input type="search" id="tbSearch" onkeyup="loadNotes(this.value);" onsearch="loadNotes(this.value);this.blur();" autocapitalize="none" />
 	</div>
 	<div id="dvNotes"></div>
-	<div id="tbNote" contentEditable="true"></div>
+	<textarea id="tbNote"></textarea>
 	<img id="img" />
 </body>
 </html>
