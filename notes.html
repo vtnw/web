@@ -175,11 +175,12 @@
 				createNote();
 			} else if (tb().value != "") {
 				var n = {"content": tb().value};
-				if (id != null) { n.id = parseInt(id); }
+				if (id != "") { n.id = parseInt(id); }
 				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
 				.put(n).onsuccess = loadNotes();
-			} else if (id != null) {
-				notesDb.transaction(storeName, "readwrite").objectStore(storeName).delete(parseInt(id));
+			} else if (id != "") {
+				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
+				.delete(parseInt(id)).onsuccess = loadNotes();
 			} else {
 				loadNotes();
 			}
