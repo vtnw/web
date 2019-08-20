@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
 	<meta name="viewport" content="width =device-width, initial-scale=1.0">
 	<title>Task</title>
@@ -12,15 +13,13 @@
 				navigator.serviceWorker.getRegistration().then(function(r) { 
 					r.showNotification("Task", {body: d.substring(0, d.length-1)});
 					tb().value = "";
-			   	});
+				});
 			}
 		}
 		function init(){
 			tb().value = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
 			navigator.serviceWorker.register("sw.js").then(function(r) {
-				Notification.requestPermission().then(function (result) {
-					if (result != "granted") { alert("failed"); }
-				});
+				Notification.requestPermission();
 			});
 		}
 		function tb() { return document.getElementById("tbData"); }
