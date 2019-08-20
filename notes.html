@@ -61,9 +61,10 @@
 		var dbVersion = 1;
 		var storeName = "notes";
 		var notesDb;
+		var bkpEnd = "<bkp" + "end>";
 		function initDb(callback) {
 			var r = indexedDB.open(dbName, dbVersion)
-			r.onupgradeneeded = function(e) { e.target.result.createObjectStore(storeName,{keyPath: "id"});	}
+			r.onupgradeneeded = function(e) { e.target.result.createObjectStore(storeName,{keyPath: "id", autoIncrement: "true"}); }
 			r.onsuccess = function(e) { notesDb = e.target.result; callback(); }
 		}
 		function getNotes(cb) {
@@ -91,7 +92,6 @@
 					dv.addEventListener("click", function () {
 						tb().value = "";
 						tb().value = this.getAttribute("data-text");
-						tb().dataset.text = tb().value;
 						tb().dataset.id = this.getAttribute("id");
 						ttl().innerText = tb().value.split("\n")[0];
 						showNote(true);
@@ -118,7 +118,13 @@
 			if(im().style.display == "block") {
 				exp("IMG_" + d + ".jpg", im().src);
 			} else if (ttl().innerText == title) {
-				getNotes(function(notes) { exp("notes_" + d + ".txt", objUrl(JSON.stringify(notes))); });
+				getNotes(function(notes) {
+					var data;
+					for(var n of notes) {
+						data += data ? n.content : bkpEnd + n.content;
+					}
+					exp("notes_" + d + ".txt", objUrl(data));
+				});
 			} else {
 				exp(tb().value.split("\n")[0] + ".txt", objUrl(tb().value));
 			}
@@ -142,11 +148,11 @@
 					};
 					image.src = e.target.result;
 				} else if (ttl().innerText == title) {
-					var notes = JSON.parse(event.target.result);
+					var notes = event.target.result.split(bkpEnd);
 					var a = 0;
 					for(var n of notes) {					
-						notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-						.put(n).onsuccess = function () {a++;if(a == notes.length) { loadNotes(); }};
+						notesDb.transaction(storeName, "readwrite").objectStore(storeName).put({content: n})
+						.onsuccess = function () {a++;if(a == notes.length) { loadNotes(); }};
 					}
 				} else {
 					tb().value = e.target.result;
@@ -166,16 +172,15 @@
 			var id = tb().dataset.id;
 			if (ttl().innerText == title) {
 				createNote();
+			} else if (tb().value != "") {
+				var n = {"content": tb().value};
+				if (id != null) { n.id = parseInt(id); }
+				notesDb.transaction(storeName, "readwrite").objectStore(storeName)
+				.put(n).onsuccess = loadNotes();
+			} else if (id != null) {
+				notesDb.transaction(storeName, "readwrite").objectStore(storeName).delete(parseInt(id));
 			} else {
-				if (id != "" && tb().value != tb().dataset.text) {
-					notesDb.transaction(storeName, "readwrite").objectStore(storeName).delete(parseInt(id));
-				}
-				if (tb().value != "" && tb().value != tb().dataset.text) {
-					notesDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.put({"content":tb().value, "id": new Date().getTime()}).onsuccess = loadNotes();
-				} else {
-					loadNotes();
-				}
+				loadNotes();
 			}
 		}
 		function createNote() {
@@ -183,7 +188,6 @@
 			showNote(true);
 			tb().value = "";
 			tb().dataset.id = "";
-			tb().dataset.text = "";
 			tb().focus();
 		}
 		function showNote(status) {
