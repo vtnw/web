@@ -105,7 +105,7 @@
 					var l = e.target.result;
 					l.visits++;
 					linksDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.put(l).onsuccess = function() { location.href = url; );
+					.put(l).onsuccess = function() { location.href = url; };
 				};
 			}
 		}
