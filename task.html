@@ -33,7 +33,7 @@
 		}
 		function clearCache() {
 			navigator.serviceWorker.getRegistration().then((r) => { 
-				r.postMessage("clearCache");
+				r.active.postMessage("clearCache");
 			});
 		}
 		function setSize() {
