@@ -1,10 +1,6 @@
 var CACHE_NAME = "web";
 self.addEventListener("activate", function(event) {
-	event.waitUntil(
-		caches.keys().then(function(keys) {
-			return Promise.all( keys.map(function(k) { return caches.delete(k); }) );
-		})
-	);
+	event.waitUntil(caches.delete(CACHE_NAME); );
 });
 self.addEventListener("fetch", function(event) {
 	event.respondWith(
@@ -22,4 +18,12 @@ self.addEventListener("fetch", function(event) {
 self.addEventListener("notificationclick", function(event) {
 	event.notification.close();
 	event.waitUntil(clients.openWindow("task.html?d=" + event.notification.body));
+});
+self.addEventListener("message", function(event){
+    console.log("SW Received Message: " + event.data);
+	event.waitUntil(
+		if(event.data == "clearCache") {
+			caches.delete(CACHE_NAME);
+		}
+	);
 });
