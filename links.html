@@ -100,13 +100,13 @@
 			if(url == "#") { 
 				showOptions();
 			} else {
-				var r = linksDb.transaction(storeName, "readwrite").objectStore(storeName)
+				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
 				.get(parseInt(id)).onsuccess = function(e){
 					var l = e.target.result;
 					l.visits++;
 					linksDb.transaction(storeName, "readwrite").objectStore(storeName).put(l);
+					location.href = url;
 				};
-				window.open(url);
 			}
 		}
 		function exportLinks() {
