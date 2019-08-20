@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+	<meta name="viewport" content="width =device-width, initial-scale=1.0">
+	<title>Task</title>
+ 	<style>
+ 		textarea {
+			width:97%;
+			height:97vh;
+			border:none;
+			outline:none;
+			padding:5px;
+			font-size:16px;
+			font-family:inherit;
+			resize:none;
+		}
+		::-webkit-scrollbar { 
+			display: none;
+		}
+	</style>
+	<script>
+		function show(d){
+			if (event.keyCode == 13) {
+				navigator.serviceWorker.getRegistration().then(function(r) { 
+					r.showNotification("Task", {body: d.substring(0, d.length-1)});
+					tb().value = "";
+			   	});
+			}
+		}
+		function init(){
+			tb().value = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+			navigator.serviceWorker.register("sw.js").then(function(r) {
+				Notification.requestPermission().then(function (result) {
+					if (result != "granted") { alert("failed"); }
+				});
+			});
+		}
+		function tb() { return document.getElementById("tbData"); }
+	</script>
+</head>
+<body onload="init();">
+	<textarea id="tbData" onkeyup="show(this.value);" placeholder="Add"></textarea>
+</body>
+</html>
