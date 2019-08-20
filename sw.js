@@ -1,6 +1,6 @@
 var CACHE_NAME = "web";
 self.addEventListener("activate", function(event) {
-	event.waitUntil(caches.delete(CACHE_NAME); );
+	event.waitUntil(caches.delete(CACHE_NAME));
 });
 self.addEventListener("fetch", function(event) {
 	event.respondWith(
