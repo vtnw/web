@@ -8,21 +8,20 @@
 		::-webkit-scrollbar { display: none; }
 	</style>
 	<script>
-		function show(d){
+		function show(d) {
 			if (event.keyCode == 13) {
 				navigator.serviceWorker.getRegistration().then(function(r) { 
 					r.showNotification("Task", {body: d.substring(0, d.length-1)});
-					tb().value = "";
+					document.getElementById("tbData").value = "";
 				});
 			}
 		}
-		function init(){
-			tb().value = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+		function init() {
+			document.getElementById("tbData").value = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
 			navigator.serviceWorker.register("sw.js").then(function(r) {
 				Notification.requestPermission();
 			});
 		}
-		function tb() { return document.getElementById("tbData"); }
 	</script>
 </head>
 <body onload="init();">
