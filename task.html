@@ -6,7 +6,7 @@
  	<style>
  		textarea {
 			width:97%;
-			height:730px;
+			height:735px;
 			border:none;
 			outline:none;
 			padding:5px;
@@ -32,7 +32,7 @@
 			navigator.serviceWorker.register("sw.js").then((r) => { Notification.requestPermission(); });
 		}
 		function setSize() {
-			tb().style.height = (window.innerHeight > 600) ? "730px" : "480px";
+			tb().style.height = (window.innerHeight > 600) ? "735px" : "480px";
 		}
 		function tb() { return document.getElementById("tb"); }
 	</script>
