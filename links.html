@@ -75,7 +75,7 @@
 			} else {
 				list().appendChild(document.createElement("hr"));
 				links.sort(function(a,b){return a.name.localeCompare(b.name);});
-				links.push({name: "#", url: "#"});
+				links.push({name: "options", url: "#"});
 			}
 			for (var l of links) {
 				var spnLink = document.createElement("span");
@@ -83,7 +83,7 @@
 				var spnIcon = document.createElement("span");
 				spnIcon.innerText = l.name.substring(0,2);
 				spnIcon.className = "spnIcon";
-				spnText.innerText = l.name.length > 1 ? l.name : "options";
+				spnText.innerText = l.name;
 				spnText.className = "spnText";
 				spnLink.dataset.id = l.id;
 				spnLink.dataset.url = l.url;
