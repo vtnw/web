@@ -12,19 +12,15 @@
 			if (event.keyCode == 13) {
 				navigator.serviceWorker.getRegistration().then(function(r) { 
 					r.showNotification("Task", {body: d.substring(0, d.length-1)});
-					document.getElementById("tbData").value = "";
+					document.getElementById("tb").value = "";
 				});
 			}
 		}
 		function init() {
-			document.getElementById("tbData").value = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-			navigator.serviceWorker.register("sw.js").then(function(r) {
-				Notification.requestPermission();
-			});
+			document.getElementById("tb").value = decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+			navigator.serviceWorker.register("sw.js").then(function(r) { Notification.requestPermission(); });
 		}
 	</script>
 </head>
-<body onload="init();">
-	<textarea id="tbData" onkeyup="show(this.value);" placeholder="Add"></textarea>
-</body>
+<body onload="init();"><textarea id="tb" onkeyup="show(this.value);" placeholder="Add"></textarea></body>
 </html>
