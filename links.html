@@ -41,17 +41,17 @@
 		var dbVersion = 1;
 		var storeName = "links";
 		var linksDb;
-		var visitsCount = 8;		
-		initDb = (callback) => {
+		var topCount = 8;
+		
+		function initDb(cb) {
 			var r = indexedDB.open(dbName, dbVersion)
 			r.onupgradeneeded = (e) => { e.target.result.createObjectStore(storeName,{keyPath: "id",autoIncrement: "true"}); }
-			r.onsuccess = (e) => { linksDb = e.target.result; callback(); }
+			r.onsuccess = (e) => { linksDb = e.target.result; cb(); }
 		}
 		function getLinks(cb) {
 			var links = [];
 			linksDb.transaction(storeName, "readwrite").objectStore(storeName)
-			.openCursor(null, "prev")
-			.onsuccess = (e) => {
+			.openCursor().onsuccess = (e) => {
 				var cursor = e.target.result;
 				if(cursor) { links.push(cursor.value); cursor.continue();
 				} else { cb(links); }
@@ -63,10 +63,10 @@
 				buildLinks(links, false);
 			});
 		}
-		function buildLinks(links, byVisits) {
-			if(byVisits) {
+		function buildLinks(links, top) {
+			if(top) {
 				links.sort(function(a,b){return b.visits - a.visits;});
-				links.splice(visitsCount);
+				links.splice(topCount);
 				list().innerText = "";
 			} else {
 				list().appendChild(document.createElement("hr"));
@@ -126,9 +126,9 @@
 		}
 		function importLinks() {
 			var fr = new FileReader();
-			fr.onload = (e) => {
+			fr.onload = function() {
 				var links = event.target.result.split("\n\n");
-				var a = 0;console.log(links);
+				var a = 0;
 				for(var link of links) {
 					var l = link.split("\n");
 					linksDb.transaction(storeName, "readwrite").objectStore(storeName)
@@ -144,11 +144,11 @@
 			indexedDB.deleteDatabase(dbName).onsuccess = () => { alert("Deleted"); }
 		}
 		function addLink() {
-			var link = prompt("Link?");
-			link = link ? link.split("|") : "";
-			if(link.length == 2) {
+			var l = prompt("Link?");
+			l = l ? l.split("|") : "";
+			if(l.length == 2) {
 				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
-				.put({name:link[0], url:link[1], visits:0}).onsuccess = loadLinks();
+				.put({name:l[0], url:l[1], visits:0}).onsuccess = loadLinks();
 			}
 		}
 		function showOptions() {
