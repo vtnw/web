@@ -21,5 +21,5 @@ self.addEventListener("fetch", function(event) {
 });
 self.addEventListener("notificationclick", function(event) {
 	event.notification.close();
-	event.waitUntil(clients.openWindow("notify.html?d=" + event.notification.body));
+	event.waitUntil(clients.openWindow("task.html?d=" + event.notification.body));
 });
