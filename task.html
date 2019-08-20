@@ -4,23 +4,40 @@
 	<meta name="viewport" content="width =device-width, initial-scale=1.0">
 	<title>Task</title>
  	<style>
- 		textarea { width:97%; height:90vh; border:none; outline:none; padding:5px; font-size:16px; font-family:inherit;	resize:none; }
-		::-webkit-scrollbar { display: none; }
+ 		textarea {
+			width:97%;
+			height:90vh;
+			border:none;
+			outline:none;
+			padding:5px;
+			font-size:16px;
+			font-family:inherit;
+			resize:none;
+		}
+		::-webkit-scrollbar {
+			display: none;
+		}
 	</style>
 	<script>
 		function show(d) {
 			if (event.keyCode == 13) {
 				navigator.serviceWorker.getRegistration().then((r) => { 
 					r.showNotification("Task", {body: d.substring(0, d.length-1)});
-					document.getElementById("tb").value = "";
+					tb().value = "";
 				});
 			}
 		}
 		function init() {
-			document.getElementById("tb").value = decodeURIComponent(location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+			tb().value = decodeURIComponent(location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
 			navigator.serviceWorker.register("sw.js").then((r) => { Notification.requestPermission(); });
 		}
+		function setSize() {
+			tb().style.height = (window.innerHeight > 600) ? "700px" : "450px";
+		}
+		function tb() { return document.getElementById("tb"); }
 	</script>
 </head>
-<body onload="init();"><textarea id="tb" onkeyup="show(this.value);" placeholder="Add"></textarea></body>
+<body onload="init();" onresize="setSize();">
+	<textarea id="tb" onkeyup="show(this.value);" placeholder="Add"></textarea>
+</body>
 </html>
