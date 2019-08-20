@@ -121,7 +121,8 @@
 				getNotes(function(notes) {
 					var data;
 					for(var n of notes) {
-						data += data ? n.content : bkpEnd + n.content;
+						data = data ? data + bkpEnd : "";
+						data += n.content;
 					}
 					exp("notes_" + d + ".txt", objUrl(data));
 				});
