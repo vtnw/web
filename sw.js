@@ -20,7 +20,6 @@ self.addEventListener("notificationclick", function(event) {
 	event.waitUntil(clients.openWindow("task.html?d=" + event.notification.body));
 });
 self.addEventListener("message", function(event){
-	console.log("SW Received Message: " + event.data);
 	if(event.data == "clearCache") {
 		event.waitUntil(caches.delete(CACHE_NAME));
 	}
