@@ -43,7 +43,7 @@
 		var dbName = "links";
 		var dbVersion = 1;
 		var storeName = "links";
-		var linksDb;		
+		var linksDb;
 		function initDb(cb) {
 			var r = indexedDB.open(dbName, dbVersion)
 			r.onupgradeneeded = (e) => { e.target.result.createObjectStore(storeName,{keyPath: "id",autoIncrement: "true"}); }
@@ -56,7 +56,7 @@
 				var cursor = e.target.result;
 				if(cursor) { links.push(cursor.value); cursor.continue();
 				} else { cb(links); }
-			};		
+			};
 		}
 		function loadLinks() {
 			getLinks((links) => {
@@ -94,7 +94,7 @@
 			}
 		}
 		function loadLink(id, url) {
-			if(!id) { 
+			if(!id) {
 				showOptions();
 			} else {
 				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
@@ -116,7 +116,7 @@
 				name = prompt("Name?", "links_" + d + ".txt");
 				var data;
 				for(var l of links) {
-					if(data) { data = data + "\n\n"; }
+					data = data ? data + "\n\n" : "";
 					data += l.name + "\n" + l.url;
 				}
 				a.download = name;
@@ -162,7 +162,7 @@
 		}
 		function list() { return elm("dvLinks"); }
 		function fl() { return elm("fileImport"); }
-		function elm(id) { return document.getElementById(id); }		
+		function elm(id) { return document.getElementById(id); }
 	</script>
 </head>
 <body onload="initDb(loadLinks);">
