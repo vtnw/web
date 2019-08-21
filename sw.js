@@ -21,7 +21,7 @@ self.addEventListener("notificationclick", function(event) {
 	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
 		for (var client of clientList) {
 			if (client.url == url) {
-				client.postMessage({type: "data", message: event.notification.body});
+				client.postMessage(event.notification.body);
 				return client.focus();
 			}
 		}
@@ -31,7 +31,7 @@ self.addEventListener("notificationclick", function(event) {
 self.addEventListener("message", function(event){
 	if(event.data == "clearCache") {
 		event.waitUntil(caches.delete(CACHE_NAME).then(function(boolean) {
-			event.source.postMessage({type: "alert", message: "Cleared"});
+			event.source.postMessage("Cleared");
 		}));
 	}
 });
