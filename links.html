@@ -72,7 +72,7 @@
 			} else {
 				list().appendChild(document.createElement("hr"));
 				links.sort(function(a,b){return a.name.localeCompare(b.name);});
-				links.push({name: "#"});
+				links.push({id: "", name: "#"});
 			}
 			for (var l of links) {
 				var spnLink = document.createElement("span");
