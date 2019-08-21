@@ -16,11 +16,15 @@ self.addEventListener("fetch", function(event) {
 	);
 });
 self.addEventListener("notificationclick", function(event) {
+	var url = "https://vtnw.github.io/web/task.html"
 	event.notification.close();
-	event.waitUntil(clients.openWindow("task.html?d=" + event.notification.body));
-});
-self.addEventListener("message", function(event){
-	if(event.data == "clearCache") {
-		event.waitUntil(caches.delete(CACHE_NAME));
-	}
+	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
+		for (var client of clientList) {
+			if (client.url == url) {
+				client.postMessage(event.notification.body);
+				return client.focus();
+			}
+		}
+		return clients.openWindow(url + "?d=" + event.notification.body);
+	}));
 });
