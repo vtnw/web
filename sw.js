@@ -19,7 +19,12 @@ self.addEventListener("notificationclick", function(event) {
 	var url = "https://vtnw.github.io/web/task.html"
 	event.notification.close();
 	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
-		
+		for (var client of clientList) {
+			if (client.url == url) {
+				client.postMessage(event.notification.body);
+				return client.focus();
+			}
+		}
 		return clients.openWindow(url + "?d=" + event.notification.body);
 	}));
 });
