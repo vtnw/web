@@ -45,7 +45,6 @@
 		var dbVersion = 1;
 		var storeName = "links";
 		var linksDb;
-		var topCount = 8;
 		
 		function initDb(cb) {
 			var r = indexedDB.open(dbName, dbVersion)
@@ -70,7 +69,7 @@
 		function buildLinks(links, top) {
 			if(top) {
 				links.sort(function(a,b){return b.visits - a.visits;});
-				links.splice(topCount);
+				links.splice(8);
 				list().innerText = "";
 			} else {
 				list().appendChild(document.createElement("hr"));
@@ -158,15 +157,10 @@
 		}
 		function showOptions() {
 			var o = prompt("Add/Export/Import/Clear?");
-			if (o == "a") {
-				addLink();
-			} else if(o == "e") {
-				exportLinks();
-			} else if(o == "i") {
-				fl().click();
-			} else if(o == "c") {
-				clearLinks();
-			}
+			if (o == "a") { addLink(); }
+			else if(o == "e") { exportLinks(); }
+			else if(o == "i") { fl().click(); }
+			else if(o == "c") { clearLinks(); }
 		}
 		function list() { return elm("dvLinks"); }
 		function fl() { return elm("fileImport"); }
