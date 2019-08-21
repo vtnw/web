@@ -94,7 +94,7 @@
 			}
 		}
 		function loadLink(id, url) {
-			if(id == null) {
+			if(id == "") {
 				showOptions();
 			} else {
 				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
