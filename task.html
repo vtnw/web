@@ -19,6 +19,13 @@
 		}
 	</style>
 	<script>
+		navigator.serviceWorker.addEventListener("message", function(event){
+			if (event.data.type == "alert") {
+				alert(event.data.message);
+			} else {
+				tb().value = event.data.message;
+			}
+		});
 		function show(d) {
 			if (event.keyCode == 13) {
 				navigator.serviceWorker.getRegistration().then((r) => { 
