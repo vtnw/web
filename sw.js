@@ -22,7 +22,7 @@ self.addEventListener("notificationclick", function(event) {
 		for (var client of clientList) {console.log(client.url);
 			if (client.url == url) {
 				client.postMessage(event.notification.body);
-				return client.focus();
+				//return client.focus();
 			}
 		}
 		return clients.openWindow(url + "?d=" + event.notification.body);
