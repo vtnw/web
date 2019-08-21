@@ -72,7 +72,7 @@
 			} else {
 				list().appendChild(document.createElement("hr"));
 				links.sort(function(a,b){return a.name.localeCompare(b.name);});
-				links.push({id: "", name: "#"});
+				links.push({id: "", name: "+"});
 			}
 			for (var l of links) {
 				var spnLink = spn();
@@ -80,7 +80,7 @@
 				var spnIcon = spn();
 				spnIcon.innerText = l.name.substring(0,2);
 				spnIcon.className = "spnIcon";
-				spnText.innerText = (l.name == "#") ? "settings" : l.name;
+				spnText.innerText = (l.name == "+") ? "Add" : l.name;
 				spnText.className = "spnText";
 				spnLink.dataset.id = l.id;
 				spnLink.dataset.url = l.url;
@@ -145,8 +145,7 @@
 			linksDb.close();
 			indexedDB.deleteDatabase(dbName).onsuccess = () => { alert("Deleted"); }
 		}
-		function addLink() {
-			var l = prompt("Link?");
+		function addLink(l) {
 			l = l ? l.split("|") : "";
 			if(l.length == 2) {
 				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
@@ -155,10 +154,10 @@
 		}
 		function showOptions() {
 			var o = prompt("Add/Export/Import/Clear?");
-			if (o == "a") { addLink(); }
-			else if(o == "e") { exportLinks(); }
+			if(o == "e") { exportLinks(); }
 			else if(o == "i") { fl().click(); }
 			else if(o == "c") { clearLinks(); }
+			else { addLink(o); }
 		}
 		function list() { return elm("dvLinks"); }
 		function fl() { return elm("fileImport"); }
