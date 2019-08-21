@@ -31,7 +31,7 @@ self.addEventListener("notificationclick", function(event) {
 self.addEventListener("message", function(event){
 	if(event.data == "clearCache") {
 		event.waitUntil(caches.delete(CACHE_NAME).then(function(boolean) {
-			event.source.postMessage({type: "cache", message: "Cleared"});
+			event.source.postMessage({type: "alert", message: "Cleared"});
 		}));
 	}
 });
