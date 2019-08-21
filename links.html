@@ -116,7 +116,7 @@
 				name = prompt("Name?", "links_" + d + ".txt");
 				var data;
 				for(var l of links) {
-					data = data ? data + "\n\n" : "";
+					if(data) { data = data + "\n\n"; }
 					data += l.name + "\n" + l.url;
 				}
 				a.download = name;
