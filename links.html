@@ -40,12 +40,10 @@
 		}
 	</style>
 	<script>
-		var title = "Links";
 		var dbName = "links";
 		var dbVersion = 1;
 		var storeName = "links";
-		var linksDb;
-		
+		var linksDb;		
 		function initDb(cb) {
 			var r = indexedDB.open(dbName, dbVersion)
 			r.onupgradeneeded = (e) => { e.target.result.createObjectStore(storeName,{keyPath: "id",autoIncrement: "true"}); }
