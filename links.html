@@ -75,9 +75,9 @@
 				links.push({id: "", name: "#"});
 			}
 			for (var l of links) {
-				var spnLink = document.createElement("span");
-				var spnText = document.createElement("span");
-				var spnIcon = document.createElement("span");
+				var spnLink = spn();
+				var spnText = spn();
+				var spnIcon = spn();
 				spnIcon.innerText = l.name.substring(0,2);
 				spnIcon.className = "spnIcon";
 				spnText.innerText = (l.name == "#") ? "settings" : l.name;
@@ -163,6 +163,7 @@
 		function list() { return elm("dvLinks"); }
 		function fl() { return elm("fileImport"); }
 		function elm(id) { return document.getElementById(id); }
+		function spn() { return document.createElement("span"); }
 	</script>
 </head>
 <body onload="initDb(loadLinks);">
