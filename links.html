@@ -75,7 +75,7 @@
 			} else {
 				list().appendChild(document.createElement("hr"));
 				links.sort(function(a,b){return a.name.localeCompare(b.name);});
-				links.push({name: "options", url: "#"});
+				links.push({name: "#"});
 			}
 			for (var l of links) {
 				var spnLink = document.createElement("span");
@@ -83,7 +83,7 @@
 				var spnIcon = document.createElement("span");
 				spnIcon.innerText = l.name.substring(0,2);
 				spnIcon.className = "spnIcon";
-				spnText.innerText = l.name;
+				spnText.innerText = (l.name == "#") ? "settings" : l.name;
 				spnText.className = "spnText";
 				spnLink.dataset.id = l.id;
 				spnLink.dataset.url = l.url;
@@ -97,7 +97,7 @@
 			}
 		}
 		function loadLink(id, url) {
-			if(url == "#") { 
+			if(!id) { 
 				showOptions();
 			} else {
 				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
@@ -111,6 +111,7 @@
 		}
 		function exportLinks() {
 			getLinks((links) => {
+				links.sort(function(a,b){return a.name.localeCompare(b.name);});
 				var d = new Date();
 				d = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2)
 					+ ('0' + d.getHours()).slice(-2) + ('0' + d.getMinutes()).slice(-2) + ('0' + d.getSeconds()).slice(-2);
