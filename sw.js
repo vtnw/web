@@ -16,10 +16,8 @@ self.addEventListener("fetch", function(event) {
 	);
 });
 self.addEventListener("notificationclick", function(event) {
-	event.notification.close();
-	var page = "task.html";
-	if (event.action == "s") { page = "https://google.com/search"; }
-	if (event.action == "d") { page = "https://dictionary.cambridge.org/search/english/direct/"; }	
+	event.notification.close();console.log(event.action);
+	var page = event.action ? event.action : "task.html";
 	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
 		for (var client of clientList) {
 			if (client.url.endsWith(page)) {
