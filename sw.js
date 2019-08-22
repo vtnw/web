@@ -16,7 +16,7 @@ self.addEventListener("fetch", function(event) {
 	);
 });
 self.addEventListener("notificationclick", function(event) {
-	event.notification.close();console.log(event.action);
+	event.notification.close();
 	var page = event.action ? event.action : "task.html";
 	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
 		for (var client of clientList) {
