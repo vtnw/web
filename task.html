@@ -35,7 +35,7 @@
 			}
 		}
 		function init() {
-			tb().value = decodeURIComponent(location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("d").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+			tb().value = decodeURIComponent(location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent("q").replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
 			navigator.serviceWorker.register("sw.js").then((r) => { Notification.requestPermission(); });
 		}
 		function clearCache() {
