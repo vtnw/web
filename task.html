@@ -23,7 +23,7 @@
 			tb().value = event.data;
 		});
 		function show(d) {
-			if (event.keyCode == 13 && d.length > 0) {
+			if (event.keyCode == 13 && d != "\n") {
 				navigator.serviceWorker.getRegistration().then((r) => { 
 					r.showNotification("Task", {
 						body: d.substring(0, d.length-1),
