@@ -18,8 +18,8 @@ self.addEventListener("fetch", function(event) {
 self.addEventListener("notificationclick", function(event) {
 	event.notification.close();
 	var page = "task.html";
-	if (event.action == "s") { page = "https://google.com/search?q="; }
-	if (event.action == "d") { page = "https://dictionary.cambridge.org/search/english/direct/?q="; }	
+	if (event.action == "s") { page = "https://google.com/search"; }
+	if (event.action == "d") { page = "https://dictionary.cambridge.org/search/english/direct/"; }	
 	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
 		for (var client of clientList) {
 			if (client.url.endsWith(page)) {
@@ -27,8 +27,7 @@ self.addEventListener("notificationclick", function(event) {
 				return client.focus();
 			}
 		}
-		page = page + "?d="
-		return clients.openWindow(page + event.notification.body);
+		return clients.openWindow(page + "?q=" + event.notification.body);
 	}));
 });
 self.addEventListener("message", function(event){
