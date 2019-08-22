@@ -18,8 +18,8 @@ self.addEventListener("fetch", function(event) {
 self.addEventListener("notificationclick", function(event) {
 	event.notification.close();
 	var page = "task.html";
-	if (event.action == "search") { page = "https://google.com/search?q="; }
-	if (event.action == "dictionary") { page = "https://dictionary.cambridge.org/search/english/direct/?q="; }	
+	if (event.action == "s") { page = "https://google.com/search?q="; }
+	if (event.action == "d") { page = "https://dictionary.cambridge.org/search/english/direct/?q="; }	
 	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
 		for (var client of clientList) {
 			if (client.url.endsWith(page)) {
