@@ -25,7 +25,13 @@
 		function show(d) {
 			if (event.keyCode == 13) {
 				navigator.serviceWorker.getRegistration().then((r) => { 
-					r.showNotification("Task", { body: d.substring(0, d.length-1) });
+					r.showNotification("Task", {
+						body: d.substring(0, d.length-1),
+						actions: [{action: "Dictionary", title: "Dictionary"},
+							  {action: "Search", title: "Search"},
+							  {action: "Encyclopedia", title: "Encyclopedia"},
+							  {action: "Test", title: "Test"}]
+					});
 					tb().value = "";
 				});
 			}
