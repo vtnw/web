@@ -16,8 +16,15 @@ self.addEventListener("fetch", function(event) {
 	);
 });
 self.addEventListener("notificationclick", function(event) {
-	var page = "task.html"
 	event.notification.close();
+	var page = "task.html";
+	switch (event.action) {
+		case "search": page = "https://google.com/search?q="; break;
+		case "dictionary": page = "https://dictionary.cambridge.org/search/english/direct/?q="; break;
+		case "wikipedia": page = "https://en.wikipedia.org/wiki/Special:Search/"; break;
+		case "test": break;
+  	}
+	if(event.action) { return clients.openWindow(page + event.notification.body); }	
 	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
 		for (var client of clientList) {
 			if (client.url.endsWith(page)) {
