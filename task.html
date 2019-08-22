@@ -27,8 +27,8 @@
 				navigator.serviceWorker.getRegistration().then((r) => { 
 					r.showNotification("Task", {
 						body: d.substring(0, d.length-1),
-						actions: [{action: "dictionary", title: "Dictionary"},
-							  {action: "search", title: "Search"}]
+						actions: [{action: "d", title: "Dictionary"},
+							  {action: "s", title: "Search"}]
 					});
 					tb().value = "";
 				});
