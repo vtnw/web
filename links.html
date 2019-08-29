@@ -42,10 +42,11 @@
 		var dbVersion = 1;
 		var storeName = "links";
 		var linksDb;
-		function initDb(cb) {
+		function init(cb) {
 			var r = indexedDB.open(dbName, dbVersion)
 			r.onupgradeneeded = (e) => { e.target.result.createObjectStore(storeName,{keyPath: "id",autoIncrement: "true"}); }
 			r.onsuccess = (e) => { linksDb = e.target.result; cb(); }
+			navigator.serviceWorker.register("sw.js");
 		}
 		function getLinks(cb) {
 			var links = [];
@@ -144,7 +145,7 @@
 		function spn() { return document.createElement("span"); }
 	</script>
 </head>
-<body onload="initDb(loadLinks);">
+<body onload="init(loadLinks);">
 	<div id="dvLinks"></div>
 	<input type="file" id="fileImport" onchange="importLinks();" style="display:none" />
 </body>
