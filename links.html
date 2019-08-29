@@ -82,10 +82,13 @@
 					spnLink.appendChild(spnIcon);
 					spnLink.appendChild(spnText);
 					spnLink.addEventListener("click", function() {
+						var u = this.dataset.url;
 						if(this.dataset.id == "") {
 							showOptions();
+						} else if(u.startsWith("javascript:")) {
+							location.href = u;
 						} else {
-							window.open(this.dataset.url);
+							window.open(u);
 						}
 					});
 					list().appendChild(spnLink);
