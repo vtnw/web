@@ -84,6 +84,8 @@
 					spnLink.addEventListener("click", function() {
 						if(this.dataset.id == "") {
 							showOptions();
+						} else if(this.dataset.url.startsWith("javascript:") {
+							  location.href = this.dataset.url;
 						} else {
 							window.open(this.dataset.url);
 						}
