@@ -15,19 +15,6 @@ self.addEventListener("fetch", function(event) {
 		})
 	);
 });
-self.addEventListener("notificationclick", function(event) {
-	event.notification.close();
-	var page = event.action ? event.action : "task.html";
-	event.waitUntil(clients.matchAll({type: "window"}).then(function(clientList) {
-		for (var client of clientList) {
-			if (client.url.endsWith(page)) {
-				client.postMessage(event.notification.body);
-				return client.focus();
-			}
-		}
-		return clients.openWindow(page + "?q=" + event.notification.body);
-	}));
-});
 self.addEventListener("message", function(event){
 	if(event.data == "clearCache") {
 		event.waitUntil(caches.delete(CACHE_NAME).then(function() {
