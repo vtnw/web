@@ -6,7 +6,7 @@
 	<style>
 		textarea {
 			width:97%;
-			height:690px;
+			height:695px;
 			border:none;
 			outline: none;
 			padding: 5px;
@@ -21,7 +21,6 @@
 			font-weight:bold;
 			font-size:28px;
 			padding:5px;
-			vertical-align:bottom;
 		}
 		.spnSpace {
 			display:inline-block;
@@ -57,7 +56,7 @@
 			};
 			fileReader.readAsText(fl().files[0], "UTF-8");
 		}
-		function setSize() { tb().style.height = (window.innerHeight > 600) ? "690px" : "435px"; }
+		function setSize() { tb().style.height = (window.innerHeight > 600) ? "695px" : "440px"; }
 		function tb() { return elm("tbNote"); }
 		function fl() { return elm("fileImport"); }
 		function elm(id) { return document.getElementById(id); }
