@@ -78,8 +78,7 @@
 						if(this.dataset.id == "") {
 							showOptions();
 						} else {
-							var w = window.open(this.dataset.url, this.dataset.url);
-							w.focus();
+							window.open(this.dataset.url);
 						}
 					});
 					list().appendChild(spnLink);
