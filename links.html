@@ -47,6 +47,9 @@
 			r.onupgradeneeded = (e) => { e.target.result.createObjectStore(storeName,{keyPath: "id",autoIncrement: "true"}); }
 			r.onsuccess = (e) => { linksDb = e.target.result; cb(); }
 			navigator.serviceWorker.register("sw.js");
+			navigator.serviceWorker.addEventListener("message", function(event) {
+				alert(event.data);
+			});
 		}
 		function getLinks(cb) {
 			var links = [];
@@ -124,6 +127,9 @@
 		function clearLinks() {
 			linksDb.close();
 			indexedDB.deleteDatabase(dbName).onsuccess = () => { alert("Deleted"); }
+		}
+		function clearCache() {
+			navigator.serviceWorker.controller.postMessage("clearCache");
 		}
 		function addLink(l) {
 			l = l ? l.split("|") : "";
