@@ -56,8 +56,11 @@
 			linksDb.transaction(storeName, "readwrite").objectStore(storeName)
 			.openCursor().onsuccess = (e) => {
 				var cursor = e.target.result;
-				if(cursor) { links.push(cursor.value); cursor.continue();
-				} else { cb(links); }
+				if(cursor) {
+					links.push(cursor.value); cursor.continue();
+				} else {
+					cb(links);
+				}
 			};
 		}
 		function loadLinks() {
@@ -139,10 +142,11 @@
 			}
 		}
 		function showOptions() {
-			var o = prompt("Add/Export/Import/Clear?");
+			var o = prompt("Add/Export/Import/Clear/Refresh?");
 			if(o == "e") { exportLinks(); }
 			else if(o == "i") { fl().click(); }
 			else if(o == "c") { clearLinks(); }
+			else if(o == "r") { clearCache(); }
 			else { addLink(o); }
 		}
 		function list() { return elm("dvLinks"); }
