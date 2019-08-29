@@ -32,9 +32,6 @@
 			width:80px;
 			font-family:arial;
 		}
-		hr {
-			border:1px solid #eeeeee;
-		}
 		::-webkit-scrollbar {
 			display: none;
 		}
@@ -60,51 +57,32 @@
 		}
 		function loadLinks() {
 			getLinks((links) => {
-				buildLinks([...links], true);
-				buildLinks(links, false);
-			});
-		}
-		function buildLinks(links, top) {
-			if(top) {
-				links.sort(function(a,b){return b.visits - a.visits;});
-				links.splice(8);
 				list().innerText = "";
-			} else {
-				list().appendChild(document.createElement("hr"));
 				links.sort(function(a,b){return a.name.localeCompare(b.name);});
 				links.push({id: "", name: "+"});
-			}
-			for (var l of links) {
-				var spnLink = spn();
-				var spnText = spn();
-				var spnIcon = spn();
-				spnIcon.innerText = l.name.substring(0,2);
-				spnIcon.className = "spnIcon";
-				spnText.innerText = (l.name == "+") ? "Add" : l.name;
-				spnText.className = "spnText";
-				spnLink.dataset.id = l.id;
-				spnLink.dataset.url = l.url;
-				spnLink.className = "spnLink";
-				spnLink.appendChild(spnIcon);
-				spnLink.appendChild(spnText);
-				spnLink.addEventListener("click", function() {
-					loadLink(this.dataset.id, this.dataset.url);
-				});
-				list().appendChild(spnLink);
-			}
-		}
-		function loadLink(id, url) {
-			if(id == "") {
-				showOptions();
-			} else {
-				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
-				.get(parseInt(id)).onsuccess = function(e){
-					var l = e.target.result;
-					l.visits++;
-					linksDb.transaction(storeName, "readwrite").objectStore(storeName)
-					.put(l).onsuccess = function() { location.href = url; };
-				};
-			}
+				for (var l of links) {
+					var spnLink = spn();
+					var spnText = spn();
+					var spnIcon = spn();
+					spnIcon.innerText = l.name.substring(0,2);
+					spnIcon.className = "spnIcon";
+					spnText.innerText = (l.name == "+") ? "Add" : l.name;
+					spnText.className = "spnText";
+					spnLink.dataset.id = l.id;
+					spnLink.dataset.url = l.url;
+					spnLink.className = "spnLink";
+					spnLink.appendChild(spnIcon);
+					spnLink.appendChild(spnText);
+					spnLink.addEventListener("click", function() {
+						if(this.dataset.id == "") {
+							showOptions();
+						} else {
+							window.open(this.dataset.url, "test");
+						}
+					});
+					list().appendChild(spnLink);
+				}
+			});
 		}
 		function exportLinks() {
 			getLinks((links) => {
@@ -149,7 +127,7 @@
 			l = l ? l.split("|") : "";
 			if(l.length == 2) {
 				linksDb.transaction(storeName, "readwrite").objectStore(storeName)
-				.put({name:l[0], url:l[1], visits:0}).onsuccess = loadLinks();
+				.put({name:l[0], url:l[1]}).onsuccess = loadLinks();
 			}
 		}
 		function showOptions() {
