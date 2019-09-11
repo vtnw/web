@@ -85,10 +85,8 @@
 						var u = this.dataset.url;
 						if(this.dataset.id == "") {
 							showOptions();
-						} else if(u.startsWith("javascript:")) {
-							location.href = u;
 						} else {
-							window.open(u);
+							location.href = u;
 						}
 					});
 					list().appendChild(spnLink);
