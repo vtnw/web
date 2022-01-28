@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html manifest="list.appcache">
+
+<head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible"
+            content="IE =edge">
+      <meta name="viewport"
+            content="width =device-width, initial-scale=1.0">
+      <link rel="manifest"
+            href="manifest.json">
+      <link rel="stylesheet"
+            href="list.css">
+      <link rel="icon"
+            type="image/png"
+            href="images/icon.png" />
+      <title>List 2.0</title>
+</head>
+
+<body>
+      <div id="dvHeader">
+            <div id="dvListAction">
+                  <table>
+                        <tr>
+                              <td>
+                                    <button id="btnAdd">Add</button>
+                              </td>
+                              <td>
+                                    <button id="btnExport">Export</button>
+                              </td>
+                              <td>
+                                    <button id="btnBackup">Backup</button>
+                              </td>
+                              <td>
+                                    <button id="btnRestore">Restore</button>
+                              </td>
+                              <td>
+                                    <button id="btnClear">Clear</button>
+                              </td>
+                              <td>
+                                    <input type="file"
+                                           id="fileRestore" />
+                              </td>
+                        </tr>
+                  </table>
+            </div>
+            <div id="dvDetailAction">
+                  <table>
+                        <tr>
+                              <td>
+                                    <button id="btnBack">Back</button>
+                              </td>
+                              <td>
+                                    <button id="btnPrevious">Previous</button>
+                              </td>
+                              <td>
+                                    <button id="btnSave">Save</button>
+                              </td>
+                              <td>
+                                    <button id="btnDelete">Delete</button>
+                              </td>
+                              <td>
+                                    <button id="btnNext">Next</button>
+                              </td>
+                        </tr>
+                  </table>
+            </div>
+      </div>
+      <hr>
+      <div id="dvList">
+            <div id="dvFilter">
+                  <table>
+                        <tr>
+                              <td>
+                                    Sort By
+                              </td>
+                              <td><select id="ddlSort"></select>
+                              </td>
+                              <td></td>
+                              <td></td>
+                        </tr>
+                        <tr>
+                              <td>
+                                    Type</td>
+                              <td><select id="ddlTypesFilter"></select>
+                              </td>
+                              <td>
+                                    Selected </td>
+                              <td><select id="ddlSelectedFilter"></select>
+                              </td>
+                        </tr>
+                        <tr>
+                              <td>
+                                    Category</td>
+                              <td> <select id="ddlCategoriesFilter"></select>
+                              </td>
+                              <td>
+                                    Bought </td>
+                              <td><select id="ddlBoughtFilter"></select>
+                              </td>
+                        </tr>
+                        <tr>
+                              <td>
+                                    Frequency </td>
+                              <td><select id="ddlFrequenciesFilter"></select>
+                              </td>
+                              <td>
+                                    Bought Recently </td>
+                              <td><select id="ddlLastBoughtFilter"></select>
+                              </td>
+                        </tr>
+                  </table>
+            </div>
+            <hr>
+            <div id="dvItems">
+
+            </div>
+      </div>
+      <div id="dvDetail">
+            <table>
+                  <tr>
+                        <td>
+                              Id
+                        </td>
+                        <td>
+                              <input type="text"
+                                     id="tbId"
+                                     placeholder="Id" />
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Name
+                        </td>
+                        <td>
+                              <input type="text"
+                                     id="tbName"
+                                     placeholder="Name" />
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Comment
+                        </td>
+                        <td>
+                              <input type="text"
+                                     id="tbComment"
+                                     placeholder="Comment" />
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Quantity
+                        </td>
+                        <td>
+                              <input type="text"
+                                     id="tbQuantity"
+                                     placeholder="Quantity" />
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Type
+                        </td>
+                        <td>
+                              <select id="ddlTypes"></select>
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Frequency
+                        </td>
+                        <td>
+                              <select id="ddlFrequencies"></select>
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Selected
+                        </td>
+                        <td>
+                              <input id="cbSelected"
+                                     type="checkbox">Selected</input>
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Bought
+                        </td>
+                        <td>
+                              <input id="cbBought"
+                                     type="checkbox">Bought</input>
+                        </td>
+                  </tr>
+                  <tr>
+                        <td>
+                              Category
+                        </td>
+                        <td>
+                              <div id="dvCategories"></div>
+                        </td>
+                  </tr>
+            </table>
+      </div>
+      <script src="list.js"
+              async></script>
+</body>
+
+</html>
